@@ -125,7 +125,7 @@
         .data-table td{padding:9px;border-bottom:1px solid #edf1f5;vertical-align:top;color:#41566d;line-height:1.3}
         .data-table tbody tr:nth-child(even){background:#fbfcfd}
         .data-table tbody tr:hover{background:#f1f7ff}
-        .status-ok{font-weight:900;color:#118363}.cumplimiento{font-weight:900;color:#2f75ed}.criterios{font-weight:800;color:#4f6075;white-space:nowrap}.obs{min-width:230px}
+        .status-ok{font-weight:900;color:#118363}.cumplimiento{font-weight:900;color:#2f75ed}.criterios{font-weight:800;color:#4f6075;white-space:pre-line}.obs{min-width:230px}
         .data-footer{padding:10px 16px;font-size:9px;color:#7d8fa4;background:#fafcff}
         .rank-list{display:grid;gap:8px}
         .rank-row{display:grid;grid-template-columns:62px 1fr 40px;gap:8px;align-items:center;font-size:8px}
@@ -1512,7 +1512,10 @@ const RANKING = {
     // salen de RESUMEN_FICHAS_A3. Antes el ranking era la excepcion y ordenaba
     // por el % de avance de RESUMEN_EJECUTIVO_A3, lo que obligaba a explicar en
     // pantalla por que no cambiaba al elegir otro estado.
-    fichas:  { campo: 'fichasEstado', rotulo: 'Fichas',       unidad: 'fichas' },
+    // Descendente fijo: en la tarjeta «Fichas» el puesto 1 es siempre quien
+    // mas tiene en el estado elegido, sin importar que ese estado (p.ej.
+    // Observado) sea de los que en las demas tarjetas ordenan ascendente.
+    fichas:  { campo: 'fichasEstado', rotulo: 'Fichas',       unidad: 'fichas', orden: 'desc' },
     campos:  { campo: 'campos',       rotulo: 'Campos',       unidad: 'campos' },
     codigos: { campo: 'codigos',      rotulo: 'Denominación', unidad: 'denominaciones' }
 };

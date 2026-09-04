@@ -109,8 +109,8 @@ function construirTablero_() {
   const general  = leerHoja_(libro, TABLERO.HOJAS.GENERAL);
   const resA1    = leerHoja_(libro, TABLERO.HOJAS.RESUMEN_A1);
   const resA3    = leerHoja_(libro, TABLERO.HOJAS.RESUMEN_A3);
-  const productos= leerHoja_(libro, TABLERO.HOJAS.PRODUCTOS);
-  const procesos = leerHoja_(libro, TABLERO.HOJAS.PROCESOS);
+  const productos= leerHojaTexto_(libro, TABLERO.HOJAS.PRODUCTOS);
+  const procesos = leerHojaTexto_(libro, TABLERO.HOJAS.PROCESOS);
   const fichas   = leerHoja_(libro, TABLERO.HOJAS.FICHAS);
   const campos   = leerHoja_(libro, TABLERO.HOJAS.DETALLE_A3);
   const codigos  = leerHoja_(libro, TABLERO.HOJAS.MAESTRO_A3);
@@ -160,6 +160,19 @@ function leerHoja_(libro, nombre) {
   const hoja = buscarHoja_(libro, nombre);
   if (!hoja || hoja.getLastRow() < 2) return [];
   return hoja.getDataRange().getValues().slice(1);
+}
+
+// Igual que leerHoja_, pero pide los valores TAL COMO SE VEN en la hoja
+// (getDisplayValues) en vez de los valores tipados (getValues). Evita que
+// Sheets convierta solo, silenciosamente, algo como «8/8» —un puntaje— en
+// una fecha real, que luego llega al tablero como un Date de JavaScript y
+// se imprime entero («Sat Aug 08 2026 00:00:00 GMT…») en vez del puntaje.
+// Solo debe usarse con hojas que no tengan columnas de fecha genuinas que
+// el resto del codigo necesite como objeto Date (p.ej. HISTORIAL).
+function leerHojaTexto_(libro, nombre) {
+  const hoja = buscarHoja_(libro, nombre);
+  if (!hoja || hoja.getLastRow() < 2) return [];
+  return hoja.getDataRange().getDisplayValues().slice(1);
 }
 
 function buscarHoja_(libro, nombre) {
