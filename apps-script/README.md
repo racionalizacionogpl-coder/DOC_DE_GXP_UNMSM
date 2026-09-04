@@ -1,3 +1,11 @@
+> **Repositorio activo:** `racionalizacionogpl-coder/DOC_DE_GXP_UNMSM`
+> (migrado desde `claudecompartido7-afk/DOC_DE_GXP_UNMSM` tras el bloqueo
+> de esa cuenta de Gmail — no editar el repositorio anterior).
+>
+> - **Dashboard:** https://racionalizacionogpl-coder.github.io/DOC_DE_GXP_UNMSM/
+> - **Backend (Apps Script):** proyecto standalone bajo `racionalizacion.ogpl@gmail.com`,
+>   URL `/exec` configurada en `Dashboard.html` → `GXP_ENDPOINT`.
+
 # Registro de decisiones · Web App de Apps Script
 
 Backend que recibe las recomendaciones aceptadas en el panel **Diagnóstico** del
