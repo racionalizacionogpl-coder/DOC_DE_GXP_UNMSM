@@ -922,3 +922,83 @@ function probarTablero() {
   Logger.log(texto);
   return texto;
 }
+
+/**
+ * Por qué las barras de «% Avance por Facultad» salen en cero.
+ *
+ * El porcentaje de cada facultad se busca en tres sitios, por este orden:
+ * RESUMEN_GENERAL (columnas C y D), y si ahí no hay nada, RESUMEN_EJECUTIVO_A1
+ * columna G para el Anexo 1 y RESUMEN_EJECUTIVO_A3 columna L para el Anexo 3.
+ * Cuando ninguno de los tres da un número, el tablero pone 0 y la barra
+ * desaparece —queda a ras del eje— mientras el recuento de la derecha mete a
+ * las veinte facultades en «avance menor al 50%».
+ *
+ * Esto vuelca la cabecera de las tres hojas con el NÚMERO DE COLUMNA de cada
+ * una y lo que trae la primera facultad, para ver de un vistazo si el
+ * porcentaje está en otra columna de la que el código busca.
+ */
+function diagnosticoAvance() {
+  const libro = SpreadsheetApp.openById(TABLERO.LIBRO_ID);
+  const lineas = ['════════ DE DÓNDE SALE EL % DE AVANCE ════════',
+                  'Libro: ' + libro.getName(), ''];
+
+  [
+    { hoja: TABLERO.HOJAS.GENERAL,    rotulo: 'RESUMEN_GENERAL',
+      busca: [[2, 'pctAnexo1'], [3, 'pctAnexo3'], [4, 'pctGeneral']] },
+    { hoja: TABLERO.HOJAS.RESUMEN_A1, rotulo: 'RESUMEN_EJECUTIVO_A1 (respaldo Anexo 1)',
+      busca: [[6, 'pctAnexo1']] },
+    { hoja: TABLERO.HOJAS.RESUMEN_A3, rotulo: 'RESUMEN_EJECUTIVO_A3 (respaldo Anexo 3)',
+      busca: [[11, 'pctAnexo3']] }
+  ].forEach(function (cfg) {
+    const hoja = buscarHoja_(libro, cfg.hoja);
+    lineas.push('── ' + cfg.rotulo);
+    if (!hoja) {
+      lineas.push('   ✗ LA HOJA NO APARECE EN EL LIBRO.');
+      lineas.push('');
+      return;
+    }
+
+    const filas = hoja.getDataRange().getValues();
+    lineas.push('   filas de datos: ' + Math.max(0, filas.length - 1));
+    if (!filas.length) { lineas.push(''); return; }
+
+    lineas.push('   COLUMNAS (número · letra · cabecera · valor de la 1ª fila):');
+    filas[0].forEach(function (cab, i) {
+      const muestra = filas.length > 1 ? filas[1][i] : '';
+      lineas.push('      [' + i + '] ' + columnaLetra_(i) + '  «' + String(cab).trim() +
+                  '»   →   ' + JSON.stringify(muestra) +
+                  '   ·  pct_() lo lee como: ' + pct_(muestra));
+    });
+
+    lineas.push('   LO QUE EL CÓDIGO BUSCA HOY:');
+    cfg.busca.forEach(function (par) {
+      const i = par[0];
+      const muestra = filas.length > 1 ? filas[1][i] : '';
+      const leido = pct_(muestra);
+      lineas.push('      ' + par[1] + '  ←  columna [' + i + '] ' + columnaLetra_(i) +
+                  '  «' + String(filas[0][i] || '').trim() + '»' +
+                  '   →   ' + (leido === null
+                    ? '✗ NO da un porcentaje (por eso la barra queda en 0)'
+                    : '✓ ' + leido + '%'));
+    });
+    lineas.push('');
+  });
+
+  lineas.push('QUÉ HACER CON ESTO: busque arriba, en la lista de COLUMNAS, cuál');
+  lineas.push('trae de verdad el porcentaje —la que pct_() lee como un número—');
+  lineas.push('y dígame su número entre corchetes. Con eso se corrige el índice');
+  lineas.push('en indexarPorSigla_() y las barras vuelven a dibujarse.');
+  lineas.push('══════════════════════════════════════════════');
+
+  const texto = lineas.join('\n');
+  Logger.log(texto);
+  return texto;
+}
+
+/** 0 → «A», 1 → «B», … Solo para que el volcado se lea igual que la hoja. */
+function columnaLetra_(i) {
+  let n = i, letra = '';
+  do { letra = String.fromCharCode(65 + (n % 26)) + letra; n = Math.floor(n / 26) - 1; }
+  while (n >= 0);
+  return letra;
+}
