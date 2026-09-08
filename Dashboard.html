@@ -602,19 +602,28 @@
                      del tablero. Las cifras y las tablas interpretadas siguen en
                      Dashboard y en Analisis.
 
-                     El visor usa /preview y no /edit a proposito. Son tres cosas a la
-                     vez que /edit no da:
-                       · Oculta los menus y la barra de herramientas de Sheets.
-                       · Conserva la barra inferior de pestanas, para cambiar de hoja.
-                       · Es de solo lectura para TODO EL MUNDO. Con /edit, quien tenga
-                         permiso de edicion —la cuenta duena, sin ir mas lejos— podria
-                         escribir en el libro desde aqui sin darse cuenta.
-                     Se descarto /htmlembed: recorta la interfaz igual de bien, pero
-                     solo pinta UNA hoja y se lleva por delante las pestanas. -->
+                     SOBRE EL ENDPOINT. Google no deja tener las tres cosas a la vez
+                     —interfaz limpia, pestanas de hojas y solo lectura estricto— sin
+                     publicar el libro en la web:
+                       · /preview      limpio y de solo lectura, pero pinta UNA hoja
+                                       y se lleva por delante las pestanas. Probado:
+                                       era lo que dejaba el visor sin barra inferior.
+                       · /htmlembed    lo mismo: una sola hoja, sin pestanas.
+                       · /pubhtml      limpio, con pestanas y de solo lectura, pero
+                                       exige «Publicar en la web», que deja el libro
+                                       accesible a cualquiera con la URL, sin sesion.
+                       · /edit + widget=true  ← el elegido. Conserva las pestanas y,
+                                       con rm=minimal, oculta menus y barra de
+                                       herramientas. Para quien entra con permiso de
+                                       lectura —que es el caso del enlace compartido—
+                                       Sheets ya lo pinta sin poder escribir.
+                     El unico que puede editar desde aqui es quien tenga permiso de
+                     escritura en el libro. Si hace falta cerrarlo tambien para esos,
+                     hay que pasar a /pubhtml y asumir la publicacion. -->
                 <div class="sheet-header">
                     <div>
                         <h2>Libro de revision interna</h2>
-                        <p>4_REVISION_INTERNA DE_AVANCES_ACTIVIDADES &middot; solo lectura &middot; use las pestanas inferiores para cambiar de hoja</p>
+                        <p>4_REVISION_INTERNA DE_AVANCES_ACTIVIDADES &middot; use las pestanas inferiores para cambiar de hoja</p>
                     </div>
                     <a class="db-btn primary" href="https://docs.google.com/spreadsheets/d/1oYBAHp-Bd0V8un5hUAWdK1jKbcbdsROH4IOyM0MAmFk/edit?usp=sharing"
                        target="_blank" rel="noopener noreferrer">
@@ -624,14 +633,15 @@
 
                 <div class="sheet-visor">
                     <iframe
-                        src="https://docs.google.com/spreadsheets/d/1oYBAHp-Bd0V8un5hUAWdK1jKbcbdsROH4IOyM0MAmFk/preview?widget=true&amp;headers=false&amp;rm=minimal#gid=1085473862"
-                        title="Libro 4_REVISION_INTERNA DE_AVANCES_ACTIVIDADES (solo lectura)"
+                        src="https://docs.google.com/spreadsheets/d/1oYBAHp-Bd0V8un5hUAWdK1jKbcbdsROH4IOyM0MAmFk/edit?usp=sharing&amp;widget=true&amp;headers=false&amp;rm=minimal#gid=1085473862"
+                        title="Libro 4_REVISION_INTERNA DE_AVANCES_ACTIVIDADES"
                         loading="lazy"></iframe>
                 </div>
 
-                <p class="sheet-nota">Vista de solo lectura: para editar, abra el archivo con el boton de arriba.
-                    El visor usa la sesion de Google de quien mira, asi que si el libro no esta compartido con esa
-                    cuenta saldra aqui un aviso de permiso en vez de la hoja.</p>
+                <p class="sheet-nota">Las pestanas de las hojas estan abajo del visor. Quien entra con permiso de
+                    lectura no puede modificar nada; para editar, abra el archivo con el boton de arriba. El visor usa
+                    la sesion de Google de quien mira, asi que si el libro no esta compartido con esa cuenta saldra
+                    aqui un aviso de permiso en vez de la hoja.</p>
             </div>
         </div>
     </main>
