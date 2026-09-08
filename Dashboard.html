@@ -177,9 +177,18 @@
            apilamiento propio: el z-index del panel de ayuda solo compite DENTRO
            de ella, nunca contra el panel de filtros, que es sticky con z-10 y
            por tanto pinta por encima. Posicionar la barra y darle un z-index
-           mayor sube ese contexto entero, y con el la ayuda. El z-10 suelto que
-           traia no hacia nada: sin position, z-index se ignora. */
-        .barra-lateral { position: relative; z-index: 80; }
+           mayor sube ese contexto entero, y con el la ayuda.
+
+           El selector lleva la etiqueta a proposito. Tailwind entra por el Play
+           CDN, que inyecta su hoja EN EJECUCION y al final del <head>, o sea
+           DESPUES de este bloque. Su utilidad .z-10 tiene la misma
+           especificidad que una clase suelta, asi que por ir despues ganaba y
+           dejaba la barra en z-index 10, empatada con el panel de filtros: y a
+           igualdad, pinta encima el que va despues en el DOM, que es el panel.
+           «aside.barra-lateral» pesa mas y no depende del orden. Por lo mismo
+           se le quito la clase z-10 al aside, que ademas no hacia nada mientras
+           el elemento no estuvo posicionado. */
+        aside.barra-lateral { position: relative; z-index: 80; }
 
         /* Ayuda contextual. Se abre a la DERECHA del icono, no debajo: la barra
            lateral mide 80 px y un panel colgando hacia abajo se saldria de la
@@ -378,7 +387,7 @@
 <body class="text-corp-textmain min-h-screen lg:h-screen flex flex-col lg:flex-row lg:overflow-hidden selection:bg-corp-blue selection:text-white">
 
     <!-- SIDEBAR -->
-    <aside class="barra-lateral hidden lg:flex w-20 bg-white/30 flex-col items-center py-8 gap-10 border-r border-white/60 z-10 backdrop-blur-sm shrink-0">
+    <aside class="barra-lateral hidden lg:flex w-20 bg-white/30 flex-col items-center py-8 gap-10 border-r border-white/60 backdrop-blur-sm shrink-0">
         <div class="ayuda-caja">
             <button id="btnAyuda" type="button" onclick="alternarAyuda(event)"
                     aria-haspopup="dialog" aria-expanded="false"
