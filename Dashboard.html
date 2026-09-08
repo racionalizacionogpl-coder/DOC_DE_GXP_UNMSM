@@ -175,19 +175,12 @@
         .sheet-header p { margin: 4px 0 0 0; font-size: 11px; color: #71829a; font-weight: 600; }
         /* .db-btn se penso para <button>; en un enlace hay que quitarle el subrayado. */
         .sheet-header a.db-btn { text-decoration: none; white-space: nowrap; }
-        /* Barra de hojas propia. La de Google no se pinta de forma fiable dentro
-           de un iframe, asi
-           que el cambio de hoja lo lleva el tablero: cada boton reapunta el
-           visor al gid de su hoja. */
-        .modo-tabs { display: flex; gap: 6px; margin-bottom: 14px; }
+        /* Barra de hojas del libro: un boton por hoja, y el que esta activo
+           marca cual se esta pintando en la tabla de abajo. */
         .sheet-tabs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; }
         .sheet-tab { padding: 6px 13px; border-radius: 9px 9px 0 0; font-size: 11px; font-weight: 700; cursor: pointer; border: 1px solid var(--line); border-bottom: none; background: #fff; color: #60738a; transition: all .16s ease; }
         .sheet-tab:hover { border-color: #9bbff6; color: #2563eb; }
         .sheet-tab.active { background: linear-gradient(145deg, #3f86ef, #2563eb); color: #fff; border-color: transparent; box-shadow: 0 4px 10px rgba(63,134,239,.24); }
-        .sheet-visor { background: var(--card); border-radius: 18px; box-shadow: var(--shadow); overflow: hidden; border: 1px solid var(--line); }
-        .sheet-visor iframe { display: block; width: 100%; height: 900px; border: 0; }
-        @media(max-width:1200px){ .sheet-visor iframe { height: 760px; } }
-        @media(max-width:900px){ .sheet-visor iframe { height: 580px; } }
         .sheet-nota { margin: 10px 2px 0 2px; font-size: 10px; color: #7d8fa4; font-weight: 600; line-height: 1.5; }
 
         /* ===== SIDEBAR ACTIVE STATE ===== */
@@ -606,26 +599,15 @@
 
             <!-- ===== VISTA 3: BASE DE DATOS ===== -->
             <div id="view-database" class="view-section flex-1 flex-col lg:overflow-y-auto lg:pr-2 custom-scrollbar min-w-0">
-                <!-- Esta pestana ya no reconstruye los registros: muestra el libro
-                     de trabajo tal cual, con sus pestanas, para consultarlo sin salir
-                     del tablero. Las cifras y las tablas interpretadas siguen en
-                     Dashboard y en Analisis.
-
-                     SOBRE LOS PARAMETROS. rm=minimal oculta los menus y la barra de
-                     herramientas de Sheets, pero de paso borra la barra inferior de
-                     pestanas del propio Google. Antes eso lo descartaba, porque era la
-                     unica manera de cambiar de hoja. Ahora las pestanas las pinta el
-                     tablero —ver pintarPestanasDelLibro()—, asi que rm=minimal ya no
-                     cuesta nada y el visor queda limpio.
-
-                     Probados y descartados: /preview y /htmlembed recortan la interfaz
-                     igual de bien, pero solo pintan UNA hoja. /pubhtml daria ademas
-                     solo lectura estricto, pero exige «Publicar en la web», que deja
-                     el libro accesible a cualquiera con la URL y sin sesion. -->
+                <!-- El libro ya no se incrusta: se pinta. Cada hoja se pide al
+                     backend (accion «hoja», que devuelve lo que la hoja MUESTRA) y
+                     se vuelca en una tabla del tablero, con sus mismas clases.
+                     Ser DOM propio es justamente lo que permite lo que un iframe de
+                     otro dominio no permitia: que el panel lateral la filtre. -->
                 <div class="sheet-header">
                     <div>
                         <h2>Libro de revision interna</h2>
-                        <p>4_REVISION_INTERNA DE_AVANCES_ACTIVIDADES &middot; use las pestanas inferiores para cambiar de hoja</p>
+                        <p id="hojaSubtitulo">4_REVISION_INTERNA DE_AVANCES_ACTIVIDADES</p>
                     </div>
                     <a class="db-btn primary" href="https://docs.google.com/spreadsheets/d/1oYBAHp-Bd0V8un5hUAWdK1jKbcbdsROH4IOyM0MAmFk/edit?usp=sharing"
                        target="_blank" rel="noopener noreferrer">
@@ -633,62 +615,33 @@
                     </a>
                 </div>
 
-                <div class="modo-tabs">
-                    <button class="sheet-tab active" data-modo="registros"
-                            onclick="setModoBaseDatos('registros')">Registros filtrados</button>
-                    <button class="sheet-tab" data-modo="libro"
-                            onclick="setModoBaseDatos('libro')">Libro completo</button>
-                </div>
-
-                <!-- MODO REGISTROS. Responde al panel lateral al instante porque no
-                     consulta nada: las filas ya estan en memoria (allData), servidas
-                     por el backend desde este mismo libro. -->
-                <section class="data-panel" id="dbNativa">
-                    <div class="data-toolbar">
-                        <div class="title" id="dbTituloNativa">Registros del libro</div>
-                        <div class="select-wrap" style="flex:1;min-width:200px">
-                            <input type="text" id="dbBuscar" placeholder="Buscar codigo, nombre, proceso, observacion…"
-                                   oninput="renderRegistros()"
-                                   style="width:100%;padding:7px 10px;border:1px solid #d8e1eb;border-radius:8px;font-size:11px;font-weight:600;outline:none;color:#334155">
-                        </div>
-                        <div class="select-wrap">
-                            <select id="dbFiltroAnexo" onchange="renderRegistros()">
-                                <option value="">Todos los anexos</option>
-                                <option value="Anexo 1">Anexo 1</option>
-                                <option value="Anexo 3">Anexo 3</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="data-meta">
-                        <span><strong>Facultad:</strong> <span id="dbFacultadMeta">Todas</span></span>
-                        <span><strong>Registros:</strong> <span id="dbConteo">0</span></span>
-                        <span>Elija una facultad en el panel de la izquierda para acotar la tabla.</span>
-                    </div>
-                    <div class="table-wrap custom-scrollbar">
-                        <table class="data-table">
-                            <thead><tr><th>ENTIDAD</th><th>ANEXO</th><th>FACULTAD</th><th>PROCESO</th><th>CODIGO</th><th>NOMBRE</th><th>TIPO</th><th>ESTADO</th><th>CUMPLIMIENTO</th><th>CRITERIOS</th><th>OBSERVACIONES</th></tr></thead>
-                            <tbody id="dbFilas"></tbody>
-                        </table>
-                    </div>
-                    <div class="data-footer" id="dbPie"></div>
-                </section>
-
-                <!-- MODO LIBRO. El visor incrustado, con las pestanas de hojas. -->
-                <div id="dbLibro" hidden>
                 <div class="sheet-tabs" id="sheetTabs"></div>
 
-                <div class="sheet-visor">
-                    <iframe id="sheetVisor"
-                        src="https://docs.google.com/spreadsheets/d/1oYBAHp-Bd0V8un5hUAWdK1jKbcbdsROH4IOyM0MAmFk/edit?usp=sharing&amp;widget=true&amp;headers=false&amp;rm=minimal#gid=1085473862"
-                        title="Libro 4_REVISION_INTERNA DE_AVANCES_ACTIVIDADES"
-                        loading="lazy"></iframe>
-                </div>
-
-                <p class="sheet-nota">Las pestanas de arriba cambian de hoja. Quien entra con permiso de
-                    lectura no puede modificar nada; para editar, abra el archivo con el boton de arriba. El visor usa
-                    la sesion de Google de quien mira, asi que si el libro no esta compartido con esa cuenta saldra
-                    aqui un aviso de permiso en vez de la hoja.</p>
-                </div>
+                <section class="data-panel" id="panelHoja">
+                    <div class="data-toolbar">
+                        <div class="title" id="hojaTitulo">Hoja</div>
+                        <div class="select-wrap" style="flex:1;min-width:200px">
+                            <input type="text" id="hojaBuscar" placeholder="Buscar en esta hoja…"
+                                   oninput="renderHoja()"
+                                   style="width:100%;padding:7px 10px;border:1px solid #d8e1eb;border-radius:8px;font-size:11px;font-weight:600;outline:none;color:#334155">
+                        </div>
+                        <button class="db-btn" onclick="recargarHoja()" title="Volver a pedir esta hoja al libro">
+                            <i class="fa-solid fa-rotate-right"></i> Recargar
+                        </button>
+                    </div>
+                    <div class="data-meta">
+                        <span><strong>Facultad:</strong> <span id="hojaFacultad">Todas</span></span>
+                        <span><strong>Filas:</strong> <span id="hojaConteo">0</span></span>
+                        <span id="hojaAviso">Elija una facultad en el panel de la izquierda para acotar la tabla.</span>
+                    </div>
+                    <div class="table-wrap custom-scrollbar">
+                        <table class="data-table" id="hojaTabla">
+                            <thead id="hojaCabecera"></thead>
+                            <tbody id="hojaFilas"></tbody>
+                        </table>
+                    </div>
+                    <div class="data-footer" id="hojaPie"></div>
+                </section>
             </div>
         </div>
     </main>
@@ -1292,9 +1245,9 @@ function aplicarSeleccion() {
     // tarjetas: las tablas de detalle se repintan con la facultad elegida.
     // Van protegidas porque el arranque llama aqui antes de que existan sus
     // desplegables, y una excepcion dejaria el resto sin pintar.
-    // renderRegistros va aqui para que la pestana «Base de datos» obedezca al
-    // panel lateral igual que las de Analisis: elegir facultad la reescribe.
-    [renderAnexo1Table, renderAnexo3Table, renderRegistros, pintarRankings].forEach(paso => {
+    // renderHoja va aqui para que la pestana «Base de datos» obedezca al panel
+    // lateral igual que las de Analisis: elegir facultad la reescribe.
+    [renderAnexo1Table, renderAnexo3Table, renderHoja, pintarRankings].forEach(paso => {
         try { paso(); } catch (e) { /* aun no hay tabla que repintar */ }
     });
 
@@ -1944,118 +1897,17 @@ function pintarTendencias() {
 }
 
 // ============================================================
-// VISOR DEL LIBRO · barra de hojas propia
+// BASE DE DATOS · las hojas del libro, pintadas por el tablero
 // ------------------------------------------------------------
-// Google no pinta su barra de pestanas de forma fiable dentro de
-// un iframe, asi que la ponemos nosotros: el backend manda el
-// nombre y el gid de cada hoja, y cada boton reapunta el visor.
+// Cada hoja se pide al backend (accion «hoja»), que devuelve lo
+// que la hoja MUESTRA, y se vuelca en una tabla del tablero.
 //
-// Si la respuesta no trae `hojas` —backend sin republicar todavia—
-// la barra no se pinta y el visor se queda como estaba. Nunca
-// deja la pestana rota por esperar un dato que aun no llega.
+// Es DOM propio, y eso es justo lo que hace posible lo que el
+// iframe impedia: que el panel lateral de facultades la filtre.
+//
+// Lo pedido se guarda en memoria, asi que volver a una hoja ya
+// vista es inmediato y no cuesta otra peticion.
 // ============================================================
-const LIBRO_ID = '1oYBAHp-Bd0V8un5hUAWdK1jKbcbdsROH4IOyM0MAmFk';
-
-// ------------------------------------------------------------
-// Los dos modos de la pestana.
-//
-// «Registros» es una tabla del propio tablero y por eso obedece al
-// panel lateral en el acto. «Libro completo» es el visor incrustado:
-// util para ver las hojas tal cual, pero sordo al filtro, porque un
-// iframe de otro dominio no se deja tocar desde fuera.
-// ------------------------------------------------------------
-let modoBaseDatos = 'registros';
-
-function setModoBaseDatos(modo) {
-    modoBaseDatos = modo;
-    const nativa = document.getElementById('dbNativa');
-    const libro  = document.getElementById('dbLibro');
-    if (nativa) nativa.hidden = modo !== 'registros';
-    if (libro)  libro.hidden  = modo !== 'libro';
-    document.querySelectorAll('.modo-tabs .sheet-tab')
-        .forEach(b => b.classList.toggle('active', b.dataset.modo === modo));
-    if (modo === 'registros') renderRegistros();
-}
-
-// ------------------------------------------------------------
-// TABLA DE REGISTROS
-//
-// No pide nada a Google: las filas ya viajaron en la respuesta del
-// backend (allData, que es DATOS_FUENTE.registros) y salen de este
-// mismo libro. Filtrar es recorrer un array que ya esta en memoria,
-// asi que el cambio de facultad se ve sin espera ni peticion.
-// ------------------------------------------------------------
-let limiteRegistros = BLOQUE_TABLA;
-
-function verMasRegistros() { limiteRegistros += BLOQUE_TABLA; renderRegistros(); }
-
-function registrosFiltrados() {
-    const buscar = (document.getElementById('dbBuscar') || {}).value || '';
-    const anexo  = (document.getElementById('dbFiltroAnexo') || {}).value || '';
-    const texto  = buscar.trim().toLowerCase();
-
-    return (allData || []).filter(d => {
-        // facultadSel es el mismo estado que manda en todo el tablero: el
-        // panel lateral, los graficos y las tablas de Analisis. Aqui no se
-        // duplica, se lee.
-        if (facultadSel && d.faculty !== facultadSel) return false;
-        if (anexo && d.anexo !== anexo) return false;
-        if (!texto) return true;
-        return [d.code, d.name, d.process, d.type, d.status, d.observations, d.criteria]
-            .join(' ').toLowerCase().includes(texto);
-    });
-}
-
-function renderRegistros() {
-    const cuerpo = document.getElementById('dbFilas');
-    if (!cuerpo) return;
-
-    const filas = registrosFiltrados();
-    const nombreFac = facultadSel
-        ? ((DATOS_FUENTE.facultades || []).filter(f => f.codigo === facultadSel)[0] || {}).nombre || facultadSel
-        : 'Todas';
-
-    document.getElementById('dbFacultadMeta').textContent = nombreFac;
-    document.getElementById('dbConteo').textContent = filas.length;
-    document.getElementById('dbTituloNativa').textContent =
-        'Registros del libro' + (facultadSel ? ' · ' + facultadSel : '');
-
-    if (!filas.length) {
-        cuerpo.innerHTML = '<tr><td colspan="11"><div class="empty-state">' +
-            '<i class="fa-solid fa-inbox"></i><br>No hay registros para este filtro</div></td></tr>';
-        document.getElementById('dbPie').innerHTML = 'Total: 0 registros.';
-        return;
-    }
-
-    const mostradas = Math.min(limiteRegistros, filas.length);
-    cuerpo.innerHTML = filas.slice(0, mostradas).map(d => '<tr>' +
-        '<td>' + escaparHtml(d.entity) + '</td>' +
-        '<td>' + escaparHtml(d.anexo) + '</td>' +
-        '<td>' + escaparHtml(d.faculty) + '</td>' +
-        '<td>' + escaparHtml(d.process) + '</td>' +
-        '<td><code>' + escaparHtml(d.code) + '</code></td>' +
-        '<td>' + escaparHtml(d.name) + '</td>' +
-        '<td>' + escaparHtml(d.type) + '</td>' +
-        '<td><span class="db-badge ' + claseEstado(d.status) + '">' +
-            escaparHtml(d.status) + '</span></td>' +
-        '<td class="cumplimiento">' + escaparHtml(d.compliance) + '</td>' +
-        '<td class="criterios">' + escaparHtml(d.criteria) + '</td>' +
-        '<td class="obs">' + escaparHtml(d.observations) + '</td>' +
-        '</tr>').join('');
-
-    document.getElementById('dbPie').innerHTML = pieDeTabla(
-        facultadSel ? 'Filtrado por <strong>' + escaparHtml(nombreFac) + '</strong>.'
-                    : 'Todas las facultades.',
-        mostradas, filas.length, 'verMasRegistros');
-}
-
-function claseEstado(estado) {
-    if (estado === 'CONFORME' || estado === 'COMPLETA') return 'ok';
-    if (estado === 'OBSERVADO' || estado === 'INCOMPLETA') return 'warn';
-    if (estado === 'SIN REGISTRO' || estado === 'SIN PRODUCTO' ||
-        estado === 'SIN REGISTRAR') return 'danger';
-    return 'gray';
-}
 
 // Los nombres de hoja los escribe quien edita el libro y acaban en innerHTML,
 // asi que se escapan. El & va primero: si no, convertiria en &amp;lt; lo que
@@ -2066,39 +1918,191 @@ function escaparHtml(s) {
         .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 }
 
-function urlDeHoja(gid) {
-    return 'https://docs.google.com/spreadsheets/d/' + LIBRO_ID +
-           '/edit?usp=sharing&widget=true&headers=false&rm=minimal#gid=' + encodeURIComponent(gid);
-}
+let hojaActiva = null;          // nombre de la hoja que se esta viendo
+let hojaCargando = false;
+const HOJAS_EN_MEMORIA = {};    // nombre -> respuesta del backend
+let limiteHoja = BLOQUE_TABLA;
 
-function verHoja(gid, boton) {
-    const visor = document.getElementById('sheetVisor');
-    if (!visor) return;
-    // Reasignar el src entero y no solo el hash: cambiar unicamente el
-    // fragmento no siempre hace que el iframe recargue en la hoja pedida.
-    visor.src = urlDeHoja(gid);
-    document.querySelectorAll('#sheetTabs .sheet-tab')
-        .forEach(b => b.classList.toggle('active', b === boton));
-}
+function verMasHoja() { limiteHoja += BLOQUE_TABLA; renderHoja(); }
 
 function pintarPestanasDelLibro() {
     const caja = document.getElementById('sheetTabs');
     if (!caja) return;
 
     const hojas = (DATOS_FUENTE && Array.isArray(DATOS_FUENTE.hojas)) ? DATOS_FUENTE.hojas : [];
-    if (!hojas.length) { caja.innerHTML = ''; return; }
+    if (!hojas.length) {
+        caja.innerHTML = '';
+        return;
+    }
 
-    // La hoja que el visor ya esta mostrando, para marcarla de entrada.
-    const visor = document.getElementById('sheetVisor');
-    const actual = visor ? (String(visor.src).split('#gid=')[1] || '') : '';
+    if (!hojaActiva) hojaActiva = hojas[0].nombre;
 
-    caja.innerHTML = hojas.map((h, i) => {
-        const marcada = actual ? h.gid === actual : i === 0;
-        return '<button class="sheet-tab' + (marcada ? ' active' : '') + '"' +
-               ' onclick="verHoja(\'' + escaparHtml(h.gid) + '\', this)"' +
-               ' title="' + escaparHtml(h.nombre) + '">' +
-               escaparHtml(h.nombre) + '</button>';
-    }).join('');
+    caja.innerHTML = hojas.map(h =>
+        '<button class="sheet-tab' + (h.nombre === hojaActiva ? ' active' : '') + '"' +
+        ' onclick="abrirHoja(\'' + escaparHtml(h.nombre).replace(/'/g, "\\'") + '\')"' +
+        ' title="' + escaparHtml(h.nombre) + '">' +
+        escaparHtml(h.nombre) + '</button>').join('');
+
+    if (!HOJAS_EN_MEMORIA[hojaActiva]) abrirHoja(hojaActiva);
+    else renderHoja();
+}
+
+function abrirHoja(nombre) {
+    hojaActiva = nombre;
+    limiteHoja = BLOQUE_TABLA;
+    document.querySelectorAll('#sheetTabs .sheet-tab')
+        .forEach(b => b.classList.toggle('active', b.textContent === nombre));
+
+    if (HOJAS_EN_MEMORIA[nombre]) { renderHoja(); return; }
+
+    if (!GXP_ENDPOINT) { avisoHoja('No hay endpoint configurado.'); return; }
+    hojaCargando = true;
+    renderHoja();
+
+    pedirAlServidor({ accion: 'hoja', hoja: nombre })
+        .then(r => {
+            hojaCargando = false;
+            if (!r || !r.ok) throw new Error((r && r.error) || 'respuesta sin datos');
+            HOJAS_EN_MEMORIA[nombre] = r;
+            renderHoja();
+        })
+        .catch(e => {
+            hojaCargando = false;
+            avisoHoja('No se pudo leer «' + nombre + '»: ' + (e.message || e));
+        });
+}
+
+function recargarHoja() {
+    if (!hojaActiva) return;
+    delete HOJAS_EN_MEMORIA[hojaActiva];
+    abrirHoja(hojaActiva);
+}
+
+function avisoHoja(texto) {
+    const cuerpo = document.getElementById('hojaFilas');
+    const cab = document.getElementById('hojaCabecera');
+    if (!cuerpo) return;
+    if (cab) cab.innerHTML = '';
+    cuerpo.innerHTML = '<tr><td><div class="empty-state">' +
+        '<i class="fa-solid fa-triangle-exclamation"></i><br>' + escaparHtml(texto) +
+        '</div></td></tr>';
+}
+
+/**
+ * En que columna de esta hoja esta la facultad.
+ *
+ * Cada hoja del libro tiene su propia estructura, asi que no vale un indice
+ * fijo. Se busca primero por el titulo de la columna y, si ninguno lo dice,
+ * por el contenido: la columna donde mas celdas coinciden con una sigla del
+ * catalogo. Si no hay ninguna, la hoja no es filtrable por facultad y se dice.
+ */
+function columnaDeFacultad(cabecera, filas) {
+    const titulos = (cabecera || []).map(t => String(t || '').toUpperCase().trim());
+    for (let i = 0; i < titulos.length; i++) {
+        if (/FACULTAD|SIGLA|DEPENDENCIA/.test(titulos[i])) return i;
+    }
+
+    const siglas = {};
+    (DATOS_FUENTE.facultades || []).forEach(f => {
+        siglas[String(f.sigla).toUpperCase()] = true;
+        siglas[String(f.codigo).toUpperCase()] = true;
+    });
+
+    let mejor = -1, mejorAciertos = 0;
+    const muestra = (filas || []).slice(0, 40);
+    const anchura = (cabecera || []).length;
+    for (let c = 0; c < anchura; c++) {
+        let aciertos = 0;
+        muestra.forEach(f => {
+            if (siglas[String((f || [])[c] || '').toUpperCase().trim()]) aciertos++;
+        });
+        if (aciertos > mejorAciertos) { mejorAciertos = aciertos; mejor = c; }
+    }
+    // Un acierto suelto puede ser casualidad; se exige que mande en la muestra.
+    return mejorAciertos >= Math.max(3, muestra.length * 0.3) ? mejor : -1;
+}
+
+/** Si esa celda designa a la facultad seleccionada, por sigla o por codigo. */
+function celdaEsDeFacultad(celda, codigoFacultad) {
+    const v = String(celda || '').toUpperCase().trim();
+    if (!v) return false;
+    const f = (DATOS_FUENTE.facultades || [])
+        .filter(x => x.codigo === codigoFacultad)[0];
+    if (!f) return false;
+    return v === String(f.codigo).toUpperCase() || v === String(f.sigla).toUpperCase();
+}
+
+function renderHoja() {
+    const cuerpo = document.getElementById('hojaFilas');
+    if (!cuerpo) return;
+
+    const titulo = document.getElementById('hojaTitulo');
+    if (titulo) titulo.textContent = hojaActiva || 'Hoja';
+
+    if (hojaCargando) {
+        const cab = document.getElementById('hojaCabecera');
+        if (cab) cab.innerHTML = '';
+        cuerpo.innerHTML = '<tr><td><div class="empty-state">' +
+            '<i class="fa-solid fa-spinner fa-spin"></i><br>Leyendo la hoja…</div></td></tr>';
+        return;
+    }
+
+    const datos = HOJAS_EN_MEMORIA[hojaActiva];
+    if (!datos) return;
+
+    const buscar = ((document.getElementById('hojaBuscar') || {}).value || '')
+        .trim().toLowerCase();
+    const colFac = columnaDeFacultad(datos.cabecera, datos.filas);
+
+    let filas = datos.filas;
+    if (facultadSel && colFac !== -1) {
+        filas = filas.filter(f => celdaEsDeFacultad(f[colFac], facultadSel));
+    }
+    if (buscar) {
+        filas = filas.filter(f => f.join(' ').toLowerCase().includes(buscar));
+    }
+
+    // Cabecera
+    document.getElementById('hojaCabecera').innerHTML =
+        '<tr>' + (datos.cabecera || []).map(t =>
+            '<th>' + escaparHtml(t) + '</th>').join('') + '</tr>';
+
+    const nombreFac = facultadSel
+        ? ((DATOS_FUENTE.facultades || []).filter(f => f.codigo === facultadSel)[0] || {}).nombre
+          || facultadSel
+        : 'Todas';
+    document.getElementById('hojaFacultad').textContent = nombreFac;
+    document.getElementById('hojaConteo').textContent = filas.length;
+
+    const aviso = document.getElementById('hojaAviso');
+    if (aviso) {
+        aviso.textContent = (facultadSel && colFac === -1)
+            ? 'Esta hoja no tiene columna de facultad: se muestra entera.'
+            : 'Elija una facultad en el panel de la izquierda para acotar la tabla.';
+    }
+
+    if (!filas.length) {
+        cuerpo.innerHTML = '<tr><td colspan="' + Math.max(1, (datos.cabecera || []).length) +
+            '"><div class="empty-state"><i class="fa-solid fa-inbox"></i><br>' +
+            'No hay filas para este filtro</div></td></tr>';
+        document.getElementById('hojaPie').innerHTML = 'Total: 0 filas.';
+        return;
+    }
+
+    const mostradas = Math.min(limiteHoja, filas.length);
+    cuerpo.innerHTML = filas.slice(0, mostradas).map(f =>
+        '<tr>' + (datos.cabecera || []).map((_, i) =>
+            '<td>' + escaparHtml(f[i]) + '</td>').join('') + '</tr>').join('');
+
+    const recorte = datos.recorte
+        ? ' La hoja tiene ' + datos.total + ' filas y el servidor envió las primeras ' +
+          datos.filas.length + '.'
+        : '';
+    document.getElementById('hojaPie').innerHTML = pieDeTabla(
+        (facultadSel && colFac !== -1
+            ? 'Filtrado por <strong>' + escaparHtml(nombreFac) + '</strong>.'
+            : 'Hoja completa.') + recorte,
+        mostradas, filas.length, 'verMasHoja');
 }
 
 function pintarTodo() {
@@ -2115,7 +2119,6 @@ function pintarTodo() {
      ['filtros Anexo 1',       populateAnexo1Filters],
      ['filtros Anexo 3',       populateAnexo3Filters],
      ['pestanas del libro',    pintarPestanasDelLibro],
-     ['registros del libro',   renderRegistros],
      ['tabla Anexo 1',         renderAnexo1Table],
      ['tabla Anexo 3',         renderAnexo3Table]
     ].forEach(([nombre, paso]) => {

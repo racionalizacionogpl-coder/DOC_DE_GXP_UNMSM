@@ -38,6 +38,9 @@ const TABLERO = {
 
   MAX_REGISTROS: 25000,
 
+  // Tope por hoja al servirla entera a la pestaña «Base de datos».
+  MAX_FILAS_HOJA: 5000,
+
   CELDA_PCT_A4: 'F36',
 
   CELDA_PCT_FASE1: 'C14',
@@ -99,6 +102,63 @@ function tablero(opciones) {
     datos.enCache = false;
   }
   return datos;
+}
+
+/**
+ * Una hoja del libro, tal como se ve, para que el tablero la pinte con sus
+ * propias tablas en vez de incrustar el libro en un iframe.
+ *
+ * Se sirven los valores MOSTRADOS (getDisplayValues) y no los tipados: es lo
+ * que hace que un «8/8» siga siendo «8/8» y no la fecha en que Sheets lo
+ * convirtió, y que los porcentajes lleguen ya con su formato.
+ *
+ * Solo se atienden hojas VISIBLES del libro y comparando por nombre exacto,
+ * para que la acción no sirva de puerta a nada que el libro tenga oculto.
+ */
+function hojaDelLibro(opciones) {
+  const pedida = String((opciones && opciones.hoja) || '').trim();
+  if (!pedida) return { ok: false, error: 'Falta el nombre de la hoja.' };
+
+  const libro = SpreadsheetApp.openById(TABLERO.LIBRO_ID);
+  const visibles = libro.getSheets().filter(function (h) { return !h.isSheetHidden(); });
+  const hoja = visibles.filter(function (h) { return h.getName() === pedida; })[0];
+
+  if (!hoja) {
+    return { ok: false, error: 'La hoja «' + pedida + '» no existe o está oculta.' };
+  }
+
+  const clave = 'hoja_v1_' + pedida;
+  const cache = CacheService.getScriptCache();
+  if (!(opciones && opciones.sinCache)) {
+    const guardado = cache.get(clave);
+    if (guardado) {
+      const previo = JSON.parse(guardado);
+      previo.deCache = true;
+      return previo;
+    }
+  }
+
+  const datos = hoja.getDataRange().getDisplayValues();
+  const cabecera = datos.length ? datos[0] : [];
+  const cuerpo = datos.slice(1);
+
+  // Una hoja entera puede no caber en una respuesta. Se recorta y se dice
+  // cuánto, en vez de devolver algo incompleto sin avisar.
+  const recorte = Math.max(0, cuerpo.length - TABLERO.MAX_FILAS_HOJA);
+
+  const salida = {
+    ok: true,
+    nombre: hoja.getName(),
+    gid: String(hoja.getSheetId()),
+    cabecera: cabecera,
+    filas: cuerpo.slice(0, TABLERO.MAX_FILAS_HOJA),
+    total: cuerpo.length,
+    recorte: recorte,
+    generado: new Date().toISOString()
+  };
+
+  try { cache.put(clave, JSON.stringify(salida), TABLERO.CACHE_SEG); } catch (e) { /* no cabe */ }
+  return salida;
 }
 
 /* ══════════════════════ LECTURA DEL LIBRO ══════════════════════ */

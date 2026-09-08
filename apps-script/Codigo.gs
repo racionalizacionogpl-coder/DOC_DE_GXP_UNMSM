@@ -74,6 +74,10 @@ function doPost(e) {
       // credenciales. Devuelve sólo cifras de avance y el detalle de la
       // revisión; los paneles del área interna siguen exigiendo sesión abajo.
       case 'tablero':   return responder(tablero(datos));
+      // Una hoja del libro, tal como se ve, para pintarla en el tablero. Va
+      // con el tablero y no abajo por lo mismo: el tablero es público y estas
+      // son las hojas de las que ya salen sus cifras.
+      case 'hoja':      return responder(hojaDelLibro(datos));
     }
 
     // Todo lo demás toca datos internos o escribe en los documentos.
