@@ -602,24 +602,25 @@
                      del tablero. Las cifras y las tablas interpretadas siguen en
                      Dashboard y en Analisis.
 
-                     SOBRE EL ENDPOINT. Google no deja tener las tres cosas a la vez
-                     —interfaz limpia, pestanas de hojas y solo lectura estricto— sin
-                     publicar el libro en la web:
-                       · /preview      limpio y de solo lectura, pero pinta UNA hoja
-                                       y se lleva por delante las pestanas. Probado:
-                                       era lo que dejaba el visor sin barra inferior.
-                       · /htmlembed    lo mismo: una sola hoja, sin pestanas.
+SOBRE EL ENDPOINT. Google no deja tener a la vez interfaz limpia,
+                     pestanas de hojas y solo lectura estricto sin publicar el libro:
+                       · /preview y /htmlembed  limpios y de solo lectura, pero pintan
+                                       UNA sola hoja: sin barra de pestanas. Probados.
+                       · rm=minimal    oculta menus y barra de herramientas, pero en
+                                       ese mismo recorte se lleva las pestanas.
+                                       Probado: por eso ya no esta aqui.
                        · /pubhtml      limpio, con pestanas y de solo lectura, pero
                                        exige «Publicar en la web», que deja el libro
                                        accesible a cualquiera con la URL, sin sesion.
-                       · /edit + widget=true  ← el elegido. Conserva las pestanas y,
-                                       con rm=minimal, oculta menus y barra de
-                                       herramientas. Para quien entra con permiso de
-                                       lectura —que es el caso del enlace compartido—
-                                       Sheets ya lo pinta sin poder escribir.
-                     El unico que puede editar desde aqui es quien tenga permiso de
-                     escritura en el libro. Si hace falta cerrarlo tambien para esos,
-                     hay que pasar a /pubhtml y asumir la publicacion. -->
+                       · /edit + widget=true  ← el elegido. Es el unico que conserva
+                                       las pestanas sin publicar nada. widget=true
+                                       quita la cabecera de Google Docs; la barra de
+                                       herramientas se le queda a quien abre el libro
+                                       con permiso de escritura, y es el precio de
+                                       poder cambiar de hoja.
+                     Quien entra con el enlace compartido, que es de lectura, ni edita
+                     ni ve esa barra. Para cerrarlo tambien a los editores hay que
+                     pasar a /pubhtml y asumir la publicacion. -->
                 <div class="sheet-header">
                     <div>
                         <h2>Libro de revision interna</h2>
@@ -633,7 +634,7 @@
 
                 <div class="sheet-visor">
                     <iframe
-                        src="https://docs.google.com/spreadsheets/d/1oYBAHp-Bd0V8un5hUAWdK1jKbcbdsROH4IOyM0MAmFk/edit?usp=sharing&amp;widget=true&amp;headers=false&amp;rm=minimal#gid=1085473862"
+                        src="https://docs.google.com/spreadsheets/d/1oYBAHp-Bd0V8un5hUAWdK1jKbcbdsROH4IOyM0MAmFk/edit?usp=sharing&amp;widget=true&amp;headers=false#gid=1085473862"
                         title="Libro 4_REVISION_INTERNA DE_AVANCES_ACTIVIDADES"
                         loading="lazy"></iframe>
                 </div>
