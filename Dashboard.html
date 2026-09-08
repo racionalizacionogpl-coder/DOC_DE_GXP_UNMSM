@@ -2032,6 +2032,36 @@ function celdaEsDeFacultad(celda, codigoFacultad) {
     return v === String(f.codigo).toUpperCase() || v === String(f.sigla).toUpperCase();
 }
 
+/**
+ * El atributo style de una celda, a partir de la paleta y del indice que le
+ * toca. Cadena vacia si esa celda no estaba pintada en la hoja.
+ *
+ * Ademas del fondo decide el color del TEXTO. La semaforizacion del libro usa
+ * tonos oscuros —un rojo intenso para lo critico— sobre los que el gris de la
+ * tabla no se lee. Se mide la luminancia del fondo y, si es oscuro, el texto
+ * pasa a blanco: el color recuperado no sirve de nada si tapa el dato.
+ */
+function estiloDeFondo(paleta, indice) {
+    if (indice === undefined || indice === null) return '';
+    const color = (paleta || [])[indice];
+    if (!color) return '';
+    const claro = luminancia(color) > 0.55;
+    return ' style="background-color:' + escaparHtml(color) +
+           (claro ? '' : ';color:#fff') + '"';
+}
+
+/** Luminancia relativa aproximada de un color #rgb o #rrggbb, de 0 a 1. */
+function luminancia(hex) {
+    let h = String(hex || '').trim().replace('#', '');
+    if (h.length === 3) h = h[0] + h[0] + h[1] + h[1] + h[2] + h[2];
+    if (h.length !== 6 || /[^0-9a-f]/i.test(h)) return 1;   // ilegible: se trata como claro
+    const r = parseInt(h.slice(0, 2), 16) / 255;
+    const g = parseInt(h.slice(2, 4), 16) / 255;
+    const b = parseInt(h.slice(4, 6), 16) / 255;
+    // Pesos de percepcion: el ojo ve mucho mas el verde que el azul.
+    return 0.299 * r + 0.587 * g + 0.114 * b;
+}
+
 function renderHoja() {
     const cuerpo = document.getElementById('hojaFilas');
     if (!cuerpo) return;
@@ -2054,25 +2084,32 @@ function renderHoja() {
         .trim().toLowerCase();
     const colFac = columnaDeFacultad(datos.cabecera, datos.filas);
 
-    let filas = datos.filas;
+    // Se filtran INDICES, no filas. Los colores vienen indexados por la
+    // posicion original de la fila en la hoja, asi que conservar ese indice es
+    // lo que hace que la semaforizacion siga siendo la correcta despues de
+    // filtrar: sin esto, al acotar por facultad cada fila heredaria el color
+    // de la que ocupaba antes su lugar.
+    let indices = (datos.filas || []).map((_, i) => i);
     if (facultadSel && colFac !== -1) {
-        filas = filas.filter(f => celdaEsDeFacultad(f[colFac], facultadSel));
+        indices = indices.filter(i => celdaEsDeFacultad(datos.filas[i][colFac], facultadSel));
     }
     if (buscar) {
-        filas = filas.filter(f => f.join(' ').toLowerCase().includes(buscar));
+        indices = indices.filter(i => datos.filas[i].join(' ').toLowerCase().includes(buscar));
     }
 
-    // Cabecera
+    // Cabecera, con su propio color de fondo.
+    const colCab = datos.coloresCabecera || {};
     document.getElementById('hojaCabecera').innerHTML =
-        '<tr>' + (datos.cabecera || []).map(t =>
-            '<th>' + escaparHtml(t) + '</th>').join('') + '</tr>';
+        '<tr>' + (datos.cabecera || []).map((t, c) =>
+            '<th' + estiloDeFondo(datos.paleta, colCab[c]) + '>' +
+            escaparHtml(t) + '</th>').join('') + '</tr>';
 
     const nombreFac = facultadSel
         ? ((DATOS_FUENTE.facultades || []).filter(f => f.codigo === facultadSel)[0] || {}).nombre
           || facultadSel
         : 'Todas';
     document.getElementById('hojaFacultad').textContent = nombreFac;
-    document.getElementById('hojaConteo').textContent = filas.length;
+    document.getElementById('hojaConteo').textContent = indices.length;
 
     const aviso = document.getElementById('hojaAviso');
     if (aviso) {
@@ -2081,7 +2118,7 @@ function renderHoja() {
             : 'Elija una facultad en el panel de la izquierda para acotar la tabla.';
     }
 
-    if (!filas.length) {
+    if (!indices.length) {
         cuerpo.innerHTML = '<tr><td colspan="' + Math.max(1, (datos.cabecera || []).length) +
             '"><div class="empty-state"><i class="fa-solid fa-inbox"></i><br>' +
             'No hay filas para este filtro</div></td></tr>';
@@ -2089,10 +2126,15 @@ function renderHoja() {
         return;
     }
 
-    const mostradas = Math.min(limiteHoja, filas.length);
-    cuerpo.innerHTML = filas.slice(0, mostradas).map(f =>
-        '<tr>' + (datos.cabecera || []).map((_, i) =>
-            '<td>' + escaparHtml(f[i]) + '</td>').join('') + '</tr>').join('');
+    const mostradas = Math.min(limiteHoja, indices.length);
+    const colores = datos.colores || {};
+    cuerpo.innerHTML = indices.slice(0, mostradas).map(i => {
+        const f = datos.filas[i];
+        const colorFila = colores[i] || {};
+        return '<tr>' + (datos.cabecera || []).map((_, c) =>
+            '<td' + estiloDeFondo(datos.paleta, colorFila[c]) + '>' +
+            escaparHtml(f[c]) + '</td>').join('') + '</tr>';
+    }).join('');
 
     const recorte = datos.recorte
         ? ' La hoja tiene ' + datos.total + ' filas y el servidor envió las primeras ' +
@@ -2102,7 +2144,7 @@ function renderHoja() {
         (facultadSel && colFac !== -1
             ? 'Filtrado por <strong>' + escaparHtml(nombreFac) + '</strong>.'
             : 'Hoja completa.') + recorte,
-        mostradas, filas.length, 'verMasHoja');
+        mostradas, indices.length, 'verMasHoja');
 }
 
 function pintarTodo() {

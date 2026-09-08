@@ -138,13 +138,19 @@ function hojaDelLibro(opciones) {
     }
   }
 
-  const datos = hoja.getDataRange().getDisplayValues();
+  const rango = hoja.getDataRange();
+  const datos = rango.getDisplayValues();
   const cabecera = datos.length ? datos[0] : [];
   const cuerpo = datos.slice(1);
 
   // Una hoja entera puede no caber en una respuesta. Se recorta y se dice
   // cuánto, en vez de devolver algo incompleto sin avisar.
   const recorte = Math.max(0, cuerpo.length - TABLERO.MAX_FILAS_HOJA);
+
+  // La semaforización: el color de fondo con que la hoja marca cada celda.
+  // Sin esto el tablero pinta los datos correctos pero pierde la lectura de
+  // un vistazo que da el libro.
+  const fondos = comprimirFondos_(rango.getBackgrounds(), TABLERO.MAX_FILAS_HOJA);
 
   const salida = {
     ok: true,
@@ -154,11 +160,62 @@ function hojaDelLibro(opciones) {
     filas: cuerpo.slice(0, TABLERO.MAX_FILAS_HOJA),
     total: cuerpo.length,
     recorte: recorte,
+    paleta: fondos.paleta,
+    coloresCabecera: fondos.cabecera,
+    colores: fondos.cuerpo,
     generado: new Date().toISOString()
   };
 
   try { cache.put(clave, JSON.stringify(salida), TABLERO.CACHE_SEG); } catch (e) { /* no cabe */ }
   return salida;
+}
+
+/**
+ * Empaqueta la rejilla de colores de fondo para que quepa en la respuesta.
+ *
+ * Mandarla tal cual —una cadena «#ffffff» por celda— multiplicaría el tamaño
+ * de la respuesta por celdas que además, en su inmensa mayoría, no están
+ * pintadas. Así que se hacen dos cosas:
+ *
+ *   1. Los colores se guardan UNA vez en una paleta, y cada celda referencia
+ *      su posición. Una hoja usa cuatro o cinco tonos, no mil.
+ *   2. Solo viajan las celdas pintadas. El blanco y el «sin color» se omiten,
+ *      y las filas enteras sin color no aparecen.
+ *
+ * Devuelve { paleta: ['#d9ead3', …], cabecera: {col: idx}, cuerpo: {fila: {col: idx}} }
+ */
+function comprimirFondos_(rejilla, tope) {
+  const paleta = [];
+  const posicion = {};                       // color -> su índice en la paleta
+
+  const indiceDe = function (color) {
+    const c = String(color || '').toLowerCase();
+    // Sin color, blanco y transparente son el fondo por defecto: no se mandan.
+    if (!c || c === '#ffffff' || c === '#fff' || c === 'white') return -1;
+    if (posicion[c] === undefined) { posicion[c] = paleta.length; paleta.push(c); }
+    return posicion[c];
+  };
+
+  const fila = function (celdas) {
+    const salida = {};
+    let hay = false;
+    (celdas || []).forEach(function (color, c) {
+      const i = indiceDe(color);
+      if (i !== -1) { salida[c] = i; hay = true; }
+    });
+    return hay ? salida : null;
+  };
+
+  const cabecera = rejilla && rejilla.length ? (fila(rejilla[0]) || {}) : {};
+
+  const cuerpo = {};
+  const filas = (rejilla || []).slice(1, tope + 1);
+  filas.forEach(function (celdas, f) {
+    const pintada = fila(celdas);
+    if (pintada) cuerpo[f] = pintada;
+  });
+
+  return { paleta: paleta, cabecera: cabecera, cuerpo: cuerpo };
 }
 
 /* ══════════════════════ LECTURA DEL LIBRO ══════════════════════ */
