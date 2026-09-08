@@ -179,6 +179,7 @@
            de un iframe, asi
            que el cambio de hoja lo lleva el tablero: cada boton reapunta el
            visor al gid de su hoja. */
+        .modo-tabs { display: flex; gap: 6px; margin-bottom: 14px; }
         .sheet-tabs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; }
         .sheet-tab { padding: 6px 13px; border-radius: 9px 9px 0 0; font-size: 11px; font-weight: 700; cursor: pointer; border: 1px solid var(--line); border-bottom: none; background: #fff; color: #60738a; transition: all .16s ease; }
         .sheet-tab:hover { border-color: #9bbff6; color: #2563eb; }
@@ -340,11 +341,11 @@
             <button id="nav-dashboard" class="nav-btn w-12 h-12 bg-white rounded-full flex items-center justify-center text-corp-textmuted hover:text-corp-blue transition btn-depth" title="Dashboard" onclick="switchTab('dashboard')">
                 <i class="fa-solid fa-gauge-high"></i>
             </button>
-            <button id="nav-database" class="nav-btn w-12 h-12 bg-white rounded-full flex items-center justify-center text-corp-textmuted hover:text-corp-blue transition btn-depth" title="Base de Datos" onclick="switchTab('database')">
-                <i class="fa-solid fa-database"></i>
-            </button>
             <button id="nav-analisis" class="nav-btn w-12 h-12 bg-white rounded-full flex items-center justify-center text-corp-textmuted hover:text-corp-blue transition btn-depth" title="Analisis" onclick="switchTab('analisis')">
                 <i class="fa-solid fa-chart-line"></i>
+            </button>
+            <button id="nav-database" class="nav-btn w-12 h-12 bg-white rounded-full flex items-center justify-center text-corp-textmuted hover:text-corp-blue transition btn-depth" title="Base de Datos" onclick="switchTab('database')">
+                <i class="fa-solid fa-database"></i>
             </button>
         </div>
         <div class="mt-auto flex flex-col gap-4">
@@ -632,6 +633,48 @@
                     </a>
                 </div>
 
+                <div class="modo-tabs">
+                    <button class="sheet-tab active" data-modo="registros"
+                            onclick="setModoBaseDatos('registros')">Registros filtrados</button>
+                    <button class="sheet-tab" data-modo="libro"
+                            onclick="setModoBaseDatos('libro')">Libro completo</button>
+                </div>
+
+                <!-- MODO REGISTROS. Responde al panel lateral al instante porque no
+                     consulta nada: las filas ya estan en memoria (allData), servidas
+                     por el backend desde este mismo libro. -->
+                <section class="data-panel" id="dbNativa">
+                    <div class="data-toolbar">
+                        <div class="title" id="dbTituloNativa">Registros del libro</div>
+                        <div class="select-wrap" style="flex:1;min-width:200px">
+                            <input type="text" id="dbBuscar" placeholder="Buscar codigo, nombre, proceso, observacion…"
+                                   oninput="renderRegistros()"
+                                   style="width:100%;padding:7px 10px;border:1px solid #d8e1eb;border-radius:8px;font-size:11px;font-weight:600;outline:none;color:#334155">
+                        </div>
+                        <div class="select-wrap">
+                            <select id="dbFiltroAnexo" onchange="renderRegistros()">
+                                <option value="">Todos los anexos</option>
+                                <option value="Anexo 1">Anexo 1</option>
+                                <option value="Anexo 3">Anexo 3</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="data-meta">
+                        <span><strong>Facultad:</strong> <span id="dbFacultadMeta">Todas</span></span>
+                        <span><strong>Registros:</strong> <span id="dbConteo">0</span></span>
+                        <span>Elija una facultad en el panel de la izquierda para acotar la tabla.</span>
+                    </div>
+                    <div class="table-wrap custom-scrollbar">
+                        <table class="data-table">
+                            <thead><tr><th>ENTIDAD</th><th>ANEXO</th><th>FACULTAD</th><th>PROCESO</th><th>CODIGO</th><th>NOMBRE</th><th>TIPO</th><th>ESTADO</th><th>CUMPLIMIENTO</th><th>CRITERIOS</th><th>OBSERVACIONES</th></tr></thead>
+                            <tbody id="dbFilas"></tbody>
+                        </table>
+                    </div>
+                    <div class="data-footer" id="dbPie"></div>
+                </section>
+
+                <!-- MODO LIBRO. El visor incrustado, con las pestanas de hojas. -->
+                <div id="dbLibro" hidden>
                 <div class="sheet-tabs" id="sheetTabs"></div>
 
                 <div class="sheet-visor">
@@ -645,6 +688,7 @@
                     lectura no puede modificar nada; para editar, abra el archivo con el boton de arriba. El visor usa
                     la sesion de Google de quien mira, asi que si el libro no esta compartido con esa cuenta saldra
                     aqui un aviso de permiso en vez de la hoja.</p>
+                </div>
             </div>
         </div>
     </main>
@@ -1248,7 +1292,9 @@ function aplicarSeleccion() {
     // tarjetas: las tablas de detalle se repintan con la facultad elegida.
     // Van protegidas porque el arranque llama aqui antes de que existan sus
     // desplegables, y una excepcion dejaria el resto sin pintar.
-    [renderAnexo1Table, renderAnexo3Table, pintarRankings].forEach(paso => {
+    // renderRegistros va aqui para que la pestana «Base de datos» obedezca al
+    // panel lateral igual que las de Analisis: elegir facultad la reescribe.
+    [renderAnexo1Table, renderAnexo3Table, renderRegistros, pintarRankings].forEach(paso => {
         try { paso(); } catch (e) { /* aun no hay tabla que repintar */ }
     });
 
@@ -1910,6 +1956,107 @@ function pintarTendencias() {
 // ============================================================
 const LIBRO_ID = '1oYBAHp-Bd0V8un5hUAWdK1jKbcbdsROH4IOyM0MAmFk';
 
+// ------------------------------------------------------------
+// Los dos modos de la pestana.
+//
+// «Registros» es una tabla del propio tablero y por eso obedece al
+// panel lateral en el acto. «Libro completo» es el visor incrustado:
+// util para ver las hojas tal cual, pero sordo al filtro, porque un
+// iframe de otro dominio no se deja tocar desde fuera.
+// ------------------------------------------------------------
+let modoBaseDatos = 'registros';
+
+function setModoBaseDatos(modo) {
+    modoBaseDatos = modo;
+    const nativa = document.getElementById('dbNativa');
+    const libro  = document.getElementById('dbLibro');
+    if (nativa) nativa.hidden = modo !== 'registros';
+    if (libro)  libro.hidden  = modo !== 'libro';
+    document.querySelectorAll('.modo-tabs .sheet-tab')
+        .forEach(b => b.classList.toggle('active', b.dataset.modo === modo));
+    if (modo === 'registros') renderRegistros();
+}
+
+// ------------------------------------------------------------
+// TABLA DE REGISTROS
+//
+// No pide nada a Google: las filas ya viajaron en la respuesta del
+// backend (allData, que es DATOS_FUENTE.registros) y salen de este
+// mismo libro. Filtrar es recorrer un array que ya esta en memoria,
+// asi que el cambio de facultad se ve sin espera ni peticion.
+// ------------------------------------------------------------
+let limiteRegistros = BLOQUE_TABLA;
+
+function verMasRegistros() { limiteRegistros += BLOQUE_TABLA; renderRegistros(); }
+
+function registrosFiltrados() {
+    const buscar = (document.getElementById('dbBuscar') || {}).value || '';
+    const anexo  = (document.getElementById('dbFiltroAnexo') || {}).value || '';
+    const texto  = buscar.trim().toLowerCase();
+
+    return (allData || []).filter(d => {
+        // facultadSel es el mismo estado que manda en todo el tablero: el
+        // panel lateral, los graficos y las tablas de Analisis. Aqui no se
+        // duplica, se lee.
+        if (facultadSel && d.faculty !== facultadSel) return false;
+        if (anexo && d.anexo !== anexo) return false;
+        if (!texto) return true;
+        return [d.code, d.name, d.process, d.type, d.status, d.observations, d.criteria]
+            .join(' ').toLowerCase().includes(texto);
+    });
+}
+
+function renderRegistros() {
+    const cuerpo = document.getElementById('dbFilas');
+    if (!cuerpo) return;
+
+    const filas = registrosFiltrados();
+    const nombreFac = facultadSel
+        ? ((DATOS_FUENTE.facultades || []).filter(f => f.codigo === facultadSel)[0] || {}).nombre || facultadSel
+        : 'Todas';
+
+    document.getElementById('dbFacultadMeta').textContent = nombreFac;
+    document.getElementById('dbConteo').textContent = filas.length;
+    document.getElementById('dbTituloNativa').textContent =
+        'Registros del libro' + (facultadSel ? ' · ' + facultadSel : '');
+
+    if (!filas.length) {
+        cuerpo.innerHTML = '<tr><td colspan="11"><div class="empty-state">' +
+            '<i class="fa-solid fa-inbox"></i><br>No hay registros para este filtro</div></td></tr>';
+        document.getElementById('dbPie').innerHTML = 'Total: 0 registros.';
+        return;
+    }
+
+    const mostradas = Math.min(limiteRegistros, filas.length);
+    cuerpo.innerHTML = filas.slice(0, mostradas).map(d => '<tr>' +
+        '<td>' + escaparHtml(d.entity) + '</td>' +
+        '<td>' + escaparHtml(d.anexo) + '</td>' +
+        '<td>' + escaparHtml(d.faculty) + '</td>' +
+        '<td>' + escaparHtml(d.process) + '</td>' +
+        '<td><code>' + escaparHtml(d.code) + '</code></td>' +
+        '<td>' + escaparHtml(d.name) + '</td>' +
+        '<td>' + escaparHtml(d.type) + '</td>' +
+        '<td><span class="db-badge ' + claseEstado(d.status) + '">' +
+            escaparHtml(d.status) + '</span></td>' +
+        '<td class="cumplimiento">' + escaparHtml(d.compliance) + '</td>' +
+        '<td class="criterios">' + escaparHtml(d.criteria) + '</td>' +
+        '<td class="obs">' + escaparHtml(d.observations) + '</td>' +
+        '</tr>').join('');
+
+    document.getElementById('dbPie').innerHTML = pieDeTabla(
+        facultadSel ? 'Filtrado por <strong>' + escaparHtml(nombreFac) + '</strong>.'
+                    : 'Todas las facultades.',
+        mostradas, filas.length, 'verMasRegistros');
+}
+
+function claseEstado(estado) {
+    if (estado === 'CONFORME' || estado === 'COMPLETA') return 'ok';
+    if (estado === 'OBSERVADO' || estado === 'INCOMPLETA') return 'warn';
+    if (estado === 'SIN REGISTRO' || estado === 'SIN PRODUCTO' ||
+        estado === 'SIN REGISTRAR') return 'danger';
+    return 'gray';
+}
+
 // Los nombres de hoja los escribe quien edita el libro y acaban en innerHTML,
 // asi que se escapan. El & va primero: si no, convertiria en &amp;lt; lo que
 // las sustituciones siguientes acaban de escribir.
@@ -1968,6 +2115,7 @@ function pintarTodo() {
      ['filtros Anexo 1',       populateAnexo1Filters],
      ['filtros Anexo 3',       populateAnexo3Filters],
      ['pestanas del libro',    pintarPestanasDelLibro],
+     ['registros del libro',   renderRegistros],
      ['tabla Anexo 1',         renderAnexo1Table],
      ['tabla Anexo 3',         renderAnexo3Table]
     ].forEach(([nombre, paso]) => {
