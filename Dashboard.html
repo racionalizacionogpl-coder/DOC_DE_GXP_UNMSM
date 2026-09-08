@@ -154,47 +154,31 @@
         .notice{font-size:9px;color:#7f90a6;margin-top:12px}
 
         /* ===== BASE DE DATOS ===== */
-        .db-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 12px; }
-        .db-search-wrap { position: relative; flex: 1; min-width: 280px; max-width: 480px; }
-        .db-search-wrap i { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: #94a3b8; font-size: 13px; }
-        .db-search-wrap input { width: 100%; padding: 10px 14px 10px 38px; border: 1px solid #d8e1eb; border-radius: 12px; background: #fff; color: #334155; font-size: 12px; font-weight: 600; outline: none; transition: all 0.2s ease; box-shadow: 0 2px 8px rgba(26,48,77,.04); }
-        .db-search-wrap input:focus { border-color: #3f86ef; box-shadow: 0 0 0 3px rgba(63,134,239,.12); }
-        .db-search-wrap input::placeholder { color: #94a3b8; font-weight: 500; }
-        .db-actions { display: flex; gap: 8px; align-items: center; }
         .db-btn { padding: 9px 16px; border-radius: 10px; font-size: 11px; font-weight: 700; letter-spacing: 0.02em; cursor: pointer; border: 1px solid #d8e1eb; background: #fff; color: #536980; transition: all 0.18s ease; display: flex; align-items: center; gap: 6px; }
         .db-btn:hover { border-color: #9bbff6; background: #f8fbff; transform: translateY(-1px); }
         .db-btn.primary { background: linear-gradient(145deg, #3f86ef, #2563eb); color: #fff; border-color: transparent; box-shadow: 0 4px 12px rgba(63,134,239,.28); }
         .db-btn.primary:hover { box-shadow: 0 6px 16px rgba(63,134,239,.36); transform: translateY(-1px); }
-        .db-filters-bar { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; align-items: center; }
-        .db-filter-chip { padding: 7px 14px; border-radius: 20px; font-size: 11px; font-weight: 700; cursor: pointer; border: 1px solid var(--line); background: #fff; color: #60738a; transition: all 0.18s ease; user-select: none; }
-        .db-filter-chip:hover { border-color: #9bbff6; transform: translateY(-1px); }
-        .db-filter-chip.active { background: linear-gradient(145deg, #3f86ef, #2563eb); color: #fff; border-color: transparent; box-shadow: 0 4px 10px rgba(63,134,239,.24); }
-        .db-table-card { background: var(--card); border-radius: 18px; box-shadow: var(--shadow); overflow: hidden; }
-        .db-table-card .data-toolbar { background: linear-gradient(180deg,#f8fbff,#fff); }
-        .db-table-card .data-table { font-size: 11px; }
-        .db-table-card .data-table th { font-size: 10px; padding: 12px 10px; background: #eff4f8; font-weight: 800; letter-spacing: 0.04em; }
-        .db-table-card .data-table td { padding: 10px; font-size: 11px; font-weight: 500; }
-        .db-pagination { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; background: #fafcff; border-top: 1px solid var(--line); }
-        .db-page-info { font-size: 11px; color: #7d8fa4; font-weight: 600; }
-        .db-page-buttons { display: flex; gap: 4px; }
-        .db-page-btn { width: 32px; height: 32px; border-radius: 8px; border: 1px solid #d8e1eb; background: #fff; color: #536980; font-size: 11px; font-weight: 700; cursor: pointer; transition: all 0.15s ease; display: flex; align-items: center; justify-content: center; }
-        .db-page-btn:hover:not(:disabled) { border-color: #3f86ef; color: #3f86ef; background: #f0f7ff; }
-        .db-page-btn.active { background: linear-gradient(145deg, #3f86ef, #2563eb); color: #fff; border-color: transparent; box-shadow: 0 2px 8px rgba(63,134,239,.28); }
-        .db-page-btn:disabled { opacity: 0.4; cursor: not-allowed; }
         .db-badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 10px; font-weight: 800; letter-spacing: 0.02em; }
         .db-badge.ok { background: #dcfce7; color: #15803d; }
         .db-badge.warn { background: #fef3c7; color: #b45309; }
         .db-badge.danger { background: #fee2e2; color: #b91c1c; }
         .db-badge.info { background: #dbeafe; color: #1d4ed8; }
         .db-badge.gray { background: #f1f5f9; color: #475569; }
-        .db-summary { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 20px; }
-        @media(max-width:900px){.db-summary{grid-template-columns:repeat(2,1fr)}}
-        .db-summary-card { background: var(--card); border-radius: 16px; box-shadow: var(--shadow); padding: 18px; display: flex; align-items: center; gap: 14px; transition: all 0.2s ease; }
-        .db-summary-card:hover { transform: translateY(-2px); box-shadow: 0 12px 28px rgba(26,48,77,.12); }
-        .db-summary-icon { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
-        .db-summary-info h4 { font-size: 11px; color: #71829a; font-weight: 700; margin: 0 0 4px 0; text-transform: uppercase; letter-spacing: 0.04em; }
-        .db-summary-info .val { font-size: 24px; font-weight: 900; color: #162742; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
-        .db-empty { padding: 40px; text-align: center; color: #7f90a6; font-size: 13px; }
+        /* Visor del libro de trabajo (pestaña «Base de datos»).
+           El alto va en pixeles y no en vh a proposito: este tablero se
+           incrusta en interno.html y le comunica su propio alto por
+           postMessage (avisarAltura), asi que un alto en vh se mediria
+           contra un marco que a su vez depende de este contenido, y la
+           pareja entraria en un tira y afloja al redimensionar. */
+        .sheet-header { display: flex; justify-content: space-between; align-items: flex-end; gap: 16px; flex-wrap: wrap; margin-bottom: 16px; }
+        .sheet-header h2 { margin: 0; font-size: 15px; font-weight: 800; color: #162742; letter-spacing: -0.01em; }
+        .sheet-header p { margin: 4px 0 0 0; font-size: 11px; color: #71829a; font-weight: 600; }
+        /* .db-btn se penso para <button>; en un enlace hay que quitarle el subrayado. */
+        .sheet-header a.db-btn { text-decoration: none; white-space: nowrap; }
+        .sheet-visor { background: var(--card); border-radius: 18px; box-shadow: var(--shadow); overflow: hidden; border: 1px solid var(--line); }
+        .sheet-visor iframe { display: block; width: 100%; height: 760px; border: 0; }
+        @media(max-width:900px){ .sheet-visor iframe { height: 560px; } }
+        .sheet-nota { margin: 10px 2px 0 2px; font-size: 10px; color: #7d8fa4; font-weight: 600; line-height: 1.5; }
 
         /* ===== SIDEBAR ACTIVE STATE ===== */
         .nav-btn { position: relative; }
@@ -612,98 +596,31 @@
 
             <!-- ===== VISTA 3: BASE DE DATOS ===== -->
             <div id="view-database" class="view-section flex-1 flex-col lg:overflow-y-auto lg:pr-2 custom-scrollbar min-w-0">
-                <div class="db-header">
-                    <div class="db-search-wrap">
-                        <i class="fa-solid fa-magnifying-glass"></i>
-                        <input type="text" id="dbSearchInput" placeholder="Buscar por facultad, proceso, codigo, nombre..." oninput="renderDatabase()">
+                <!-- Esta pestana ya no reconstruye los registros: muestra el libro
+                     de trabajo tal cual, con sus pestanas, para consultarlo y
+                     editarlo sin salir del tablero. Las cifras y las tablas
+                     interpretadas siguen en Dashboard y en Analisis. -->
+                <div class="sheet-header">
+                    <div>
+                        <h2>Libro de revision interna</h2>
+                        <p>4_REVISION_INTERNA DE_AVANCES_ACTIVIDADES &middot; use las pestanas inferiores para cambiar de hoja</p>
                     </div>
-                    <div class="db-actions">
-                        <button class="db-btn" onclick="resetDbFilters()"><i class="fa-solid fa-rotate-right"></i> Limpiar</button>
-                        <button class="db-btn primary" onclick="exportDbToCSV()"><i class="fa-solid fa-file-csv"></i> Exportar CSV</button>
-                    </div>
+                    <a class="db-btn primary" href="https://docs.google.com/spreadsheets/d/1oYBAHp-Bd0V8un5hUAWdK1jKbcbdsROH4IOyM0MAmFk/edit?gid=1085473862#gid=1085473862"
+                       target="_blank" rel="noopener noreferrer">
+                        <i class="fa-solid fa-arrow-up-right-from-square"></i> Abrir archivo original en Google Sheets
+                    </a>
                 </div>
 
-                <div class="db-summary">
-                    <div class="db-summary-card">
-                        <div class="db-summary-icon" style="background: linear-gradient(145deg, #dbeafe, #bfdbfe); color: #1d4ed8;"><i class="fa-solid fa-database"></i></div>
-                        <div class="db-summary-info"><h4>Total Registros</h4><div class="val" id="dbTotalCount">0</div></div>
-                    </div>
-                    <div class="db-summary-card">
-                        <div class="db-summary-icon" style="background: linear-gradient(145deg, #dcfce7, #bbf7d0); color: #15803d;"><i class="fa-solid fa-check-circle"></i></div>
-                        <div class="db-summary-info"><h4>Conformes / Completas</h4><div class="val" id="dbOkCount">0</div></div>
-                    </div>
-                    <div class="db-summary-card">
-                        <div class="db-summary-icon" style="background: linear-gradient(145deg, #fef3c7, #fde68a); color: #b45309;"><i class="fa-solid fa-triangle-exclamation"></i></div>
-                        <div class="db-summary-info"><h4>Observados / Incompletas</h4><div class="val" id="dbWarnCount">0</div></div>
-                    </div>
-                    <div class="db-summary-card">
-                        <div class="db-summary-icon" style="background: linear-gradient(145deg, #fee2e2, #fecaca); color: #b91c1c;"><i class="fa-solid fa-circle-xmark"></i></div>
-                        <div class="db-summary-info"><h4>Sin Registro / Sin Producto</h4><div class="val" id="dbDangerCount">0</div></div>
-                    </div>
+                <div class="sheet-visor">
+                    <iframe
+                        src="https://docs.google.com/spreadsheets/d/1oYBAHp-Bd0V8un5hUAWdK1jKbcbdsROH4IOyM0MAmFk/edit?usp=sharing&amp;widget=true&amp;headers=false#gid=1085473862"
+                        title="Libro 4_REVISION_INTERNA DE_AVANCES_ACTIVIDADES"
+                        loading="lazy"></iframe>
                 </div>
 
-                <div class="db-filters-bar">
-                    <span style="font-size:11px; font-weight:800; color:#71829a; text-transform:uppercase; letter-spacing:0.04em; margin-right:4px;">Entidad:</span>
-                    <button class="db-filter-chip active" data-filter="all" onclick="setDbEntityFilter('all')">Todos</button>
-                    <button class="db-filter-chip" data-filter="Producto" onclick="setDbEntityFilter('Producto')">Productos</button>
-                    <button class="db-filter-chip" data-filter="Proceso" onclick="setDbEntityFilter('Proceso')">Procesos</button>
-                    <button class="db-filter-chip" data-filter="SubProceso" onclick="setDbEntityFilter('SubProceso')">SubProcesos</button>
-                    <button class="db-filter-chip" data-filter="Ficha" onclick="setDbEntityFilter('Ficha')">Fichas</button>
-
-                    <span style="font-size:11px; font-weight:800; color:#71829a; text-transform:uppercase; letter-spacing:0.04em; margin:0 4px 0 16px;">Estado:</span>
-                    <button class="db-filter-chip active" data-status="all" onclick="setDbStatusFilter('all')">Todos</button>
-                    <button class="db-filter-chip" data-status="CONFORME" onclick="setDbStatusFilter('CONFORME')">Conforme</button>
-                    <button class="db-filter-chip" data-status="COMPLETA" onclick="setDbStatusFilter('COMPLETA')">Completa</button>
-                    <button class="db-filter-chip" data-status="OBSERVADO" onclick="setDbStatusFilter('OBSERVADO')">Observado</button>
-                    <button class="db-filter-chip" data-status="INCOMPLETA" onclick="setDbStatusFilter('INCOMPLETA')">Incompleta</button>
-                    <button class="db-filter-chip" data-status="SIN REGISTRAR" onclick="setDbStatusFilter('SIN REGISTRO')">Sin Registrar</button>
-                    <button class="db-filter-chip" data-status="SIN PRODUCTO" onclick="setDbStatusFilter('SIN PRODUCTO')">Sin Producto</button>
-                </div>
-
-                <div class="db-table-card">
-                    <div class="data-toolbar">
-                        <div class="title" id="dbTableTitle">Registros consolidados · Todos</div>
-                        <div class="select-wrap">
-                            <select id="dbFilterFaculty" onchange="renderDatabase()"><option value="">Todas las facultades</option></select>
-                        </div>
-                        <div class="select-wrap">
-                            <select id="dbFilterProcess" onchange="renderDatabase()"><option value="">Todos los procesos</option></select>
-                        </div>
-                        <div class="select-wrap">
-                            <select id="dbFilterAnexo" onchange="renderDatabase()"><option value="">Todos los anexos</option><option value="Anexo 1">Anexo 1</option><option value="Anexo 3">Anexo 3</option></select>
-                        </div>
-                    </div>
-                    <div class="data-meta">
-                        <span><strong>Mostrando:</strong> <span id="dbShowingCount">0</span> de <span id="dbTotalMeta">0</span> registros</span>
-                        <span><strong>Pagina:</strong> <span id="dbPageMeta">1</span> de <span id="dbTotalPages">1</span></span>
-                        <span>Use la busqueda o los filtros para refinar resultados.</span>
-                    </div>
-                    <div class="table-wrap custom-scrollbar">
-                        <table class="data-table" id="dbTable">
-                            <thead>
-                                <tr>
-                                    <th style="width:40px">#</th>
-                                    <th>ENTIDAD</th>
-                                    <th>ANEXO</th>
-                                    <th>FACULTAD</th>
-                                    <th>PROCESO NIVEL 0</th>
-                                    <th>CODIGO</th>
-                                    <th>NOMBRE</th>
-                                    <th>TIPO</th>
-                                    <th>ESTADO</th>
-                                    <th>CUMPLIMIENTO</th>
-                                    <th>CRITERIOS</th>
-                                    <th>OBSERVACIONES</th>
-                                </tr>
-                            </thead>
-                            <tbody id="dbRows"></tbody>
-                        </table>
-                    </div>
-                    <div class="db-pagination">
-                        <div class="db-page-info" id="dbPageInfo">Mostrando 1-15 de 0 registros</div>
-                        <div class="db-page-buttons" id="dbPageButtons"></div>
-                    </div>
-                </div>
+                <p class="sheet-nota">El visor pide la sesion de Google de quien mira: si el libro no esta
+                    compartido con esa cuenta, aqui saldra un aviso de permiso en vez de la hoja. En ese caso,
+                    abra el archivo con el boton de arriba o pida acceso al responsable del libro.</p>
             </div>
         </div>
     </main>
@@ -1082,7 +999,6 @@ function elegirDesdeSelector(valor) {
 
 function resetAllFilters() {
     facultadSel = null;
-    resetDbFilters();
     document.getElementById('filterFacultyA1').value = '';
     document.getElementById('filterProcessA1').value = '';
     document.getElementById('filterTypeA1').value = '';
@@ -1308,7 +1224,7 @@ function aplicarSeleccion() {
     // tarjetas: las tablas de detalle se repintan con la facultad elegida.
     // Van protegidas porque el arranque llama aqui antes de que existan sus
     // desplegables, y una excepcion dejaria el resto sin pintar.
-    [renderAnexo1Table, renderAnexo3Table, renderDatabase, pintarRankings].forEach(paso => {
+    [renderAnexo1Table, renderAnexo3Table, pintarRankings].forEach(paso => {
         try { paso(); } catch (e) { /* aun no hay tabla que repintar */ }
     });
 
@@ -1757,143 +1673,6 @@ function renderAnexo3Table() {
 }
 
 // ============================================================
-// BASE DE DATOS
-// ============================================================
-let dbPage = 1;
-const dbPageSize = 12;
-let dbEntityFilter = 'all';
-let dbStatusFilter = 'all';
-
-function populateDbFilters() {
-    const facs = [...new Set(allData.map(d => d.faculty))].sort();
-    const procs = [...new Set(allData.map(d => d.process))].sort();
-    const f = document.getElementById('dbFilterFaculty');
-    const p = document.getElementById('dbFilterProcess');
-    facs.forEach(fc => { const o = document.createElement('option'); o.value = fc; o.textContent = fc; f.appendChild(o); });
-    procs.forEach(pr => { const o = document.createElement('option'); o.value = pr; o.textContent = pr; p.appendChild(o); });
-}
-
-function getDbFilteredData() {
-    const search = document.getElementById('dbSearchInput').value.toLowerCase();
-    const fac = document.getElementById('dbFilterFaculty').value;
-    const proc = document.getElementById('dbFilterProcess').value;
-    const anexo = document.getElementById('dbFilterAnexo').value;
-
-    return allData.filter(d => {
-        if (dbEntityFilter !== 'all' && d.entity !== dbEntityFilter) return false;
-        if (dbStatusFilter !== 'all' && d.status !== dbStatusFilter) return false;
-        if (fac && d.faculty !== fac) return false;
-        if (proc && d.process !== proc) return false;
-        if (anexo && d.anexo !== anexo) return false;
-        if (search) {
-            const hay = `${d.faculty} ${d.process} ${d.code} ${d.name} ${d.type} ${d.status} ${d.observations}`.toLowerCase();
-            if (!hay.includes(search)) return false;
-        }
-        return true;
-    });
-}
-
-function getDbBadgeClass(status) {
-    if (status === 'CONFORME' || status === 'COMPLETA') return 'ok';
-    if (status === 'OBSERVADO' || status === 'INCOMPLETA') return 'warn';
-    if (status === 'SIN REGISTRO' || status === 'SIN PRODUCTO') return 'danger';
-    return 'gray';
-}
-
-function renderDatabase() {
-    const data = getDbFilteredData();
-    const total = data.length;
-    const totalPages = Math.max(1, Math.ceil(total / dbPageSize));
-    if (dbPage > totalPages) dbPage = totalPages;
-    if (dbPage < 1) dbPage = 1;
-    const start = (dbPage - 1) * dbPageSize;
-    const pageData = data.slice(start, start + dbPageSize);
-
-    // Summary
-    const ok = allData.filter(d => d.status === 'CONFORME' || d.status === 'COMPLETA').length;
-    const warn = allData.filter(d => d.status === 'OBSERVADO' || d.status === 'INCOMPLETA').length;
-    const danger = allData.filter(d => d.status === 'SIN REGISTRO' || d.status === 'SIN PRODUCTO').length;
-    document.getElementById('dbTotalCount').textContent = allData.length;
-    document.getElementById('dbOkCount').textContent = ok;
-    document.getElementById('dbWarnCount').textContent = warn;
-    document.getElementById('dbDangerCount').textContent = danger;
-
-    // Meta
-    document.getElementById('dbShowingCount').textContent = total;
-    document.getElementById('dbTotalMeta').textContent = allData.length;
-    document.getElementById('dbPageMeta').textContent = dbPage;
-    document.getElementById('dbTotalPages').textContent = totalPages;
-    document.getElementById('dbPageInfo').textContent = total === 0 ? 'No hay registros para mostrar' : `Mostrando ${start+1}-${Math.min(start+dbPageSize,total)} de ${total} registros`;
-
-    const entityLabel = dbEntityFilter === 'all' ? 'Todos' : dbEntityFilter + 's';
-    const statusLabel = dbStatusFilter === 'all' ? '' : ' · ' + dbStatusFilter;
-    document.getElementById('dbTableTitle').textContent = `Registros consolidados · ${entityLabel}${statusLabel}`;
-
-    // Rows
-    const tbody = document.getElementById('dbRows');
-    if (pageData.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="12"><div class="db-empty"><i class="fa-solid fa-inbox" style="font-size:32px;margin-bottom:12px;opacity:.4;display:block;"></i>No se encontraron registros con los filtros aplicados.</div></td></tr>`;
-    } else {
-        tbody.innerHTML = pageData.map((d, i) => `
-            <tr><td>${start+i+1}</td><td>${d.entity}</td><td>${d.anexo}</td><td>${d.faculty}</td><td>${d.process}</td>
-            <td><code style="font-family:monospace;font-size:11px;color:#71829a;">${d.code}</code></td>
-            <td>${d.name}</td><td>${d.type}</td>
-            <td><span class="db-badge ${getDbBadgeClass(d.status)}">${d.status}</span></td>
-            <td style="font-variant-numeric:tabular-nums;font-weight:700;">${d.compliance}</td>
-            <td>${d.criteria}</td><td style="max-width:280px;">${d.observations}</td></tr>
-        `).join('');
-    }
-
-    // Pagination
-    const pg = document.getElementById('dbPageButtons');
-    let html = `<button class="db-page-btn" onclick="goDbPage(${dbPage-1})" ${dbPage===1?'disabled':''}><i class="fa-solid fa-chevron-left" style="font-size:10px;"></i></button>`;
-    for (let i = 1; i <= totalPages; i++) {
-        if (i === 1 || i === totalPages || (i >= dbPage - 1 && i <= dbPage + 1)) {
-            html += `<button class="db-page-btn ${i===dbPage?'active':''}" onclick="goDbPage(${i})">${i}</button>`;
-        } else if (i === dbPage - 2 || i === dbPage + 2) {
-            html += `<span style="padding:0 4px;color:#94a3b8;font-size:12px;">...</span>`;
-        }
-    }
-    html += `<button class="db-page-btn" onclick="goDbPage(${dbPage+1})" ${dbPage===totalPages?'disabled':''}><i class="fa-solid fa-chevron-right" style="font-size:10px;"></i></button>`;
-    pg.innerHTML = html;
-}
-
-function goDbPage(p) { dbPage = p; renderDatabase(); }
-
-function setDbEntityFilter(val) {
-    dbEntityFilter = val; dbPage = 1;
-    document.querySelectorAll('.db-filter-chip[data-filter]').forEach(b => b.classList.toggle('active', b.dataset.filter === val));
-    renderDatabase();
-}
-
-function setDbStatusFilter(val) {
-    dbStatusFilter = val; dbPage = 1;
-    document.querySelectorAll('.db-filter-chip[data-status]').forEach(b => b.classList.toggle('active', b.dataset.status === val));
-    renderDatabase();
-}
-
-function resetDbFilters() {
-    document.getElementById('dbSearchInput').value = '';
-    document.getElementById('dbFilterFaculty').value = '';
-    document.getElementById('dbFilterProcess').value = '';
-    document.getElementById('dbFilterAnexo').value = '';
-    setDbEntityFilter('all');
-    setDbStatusFilter('all');
-    dbPage = 1;
-}
-
-function exportDbToCSV() {
-    const data = getDbFilteredData();
-    const headers = ['#','Entidad','Anexo','Facultad','Proceso','Codigo','Nombre','Tipo','Estado','Cumplimiento','Criterios','Observaciones'];
-    const rows = data.map((d,i) => [i+1,d.entity,d.anexo,d.faculty,d.process,d.code,d.name,d.type,d.status,d.compliance,d.criteria,d.observations]);
-    const csv = [headers,...rows].map(r => r.map(c => `"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
-    const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a'); a.href = url; a.download = 'base_datos_unmsm.csv'; a.click();
-    URL.revokeObjectURL(url);
-}
-
-// ============================================================
 // INICIALIZACION
 // ============================================================
 
@@ -2107,10 +1886,8 @@ function pintarTodo() {
      ['rankings de facultades', pintarRankings],
      ['filtros Anexo 1',       populateAnexo1Filters],
      ['filtros Anexo 3',       populateAnexo3Filters],
-     ['filtros base de datos', populateDbFilters],
      ['tabla Anexo 1',         renderAnexo1Table],
-     ['tabla Anexo 3',         renderAnexo3Table],
-     ['base de datos',         renderDatabase]
+     ['tabla Anexo 3',         renderAnexo3Table]
     ].forEach(([nombre, paso]) => {
         try { paso(); }
         catch (e) { console.error('Fallo al preparar ' + nombre + ':', e); }
