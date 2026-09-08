@@ -7,6 +7,19 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&family=Source+Sans+3:ital,wght@0,300;0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<script>
+/* El tema se fija antes de pintar. La clave es la misma que usa Dashboard.html
+   y ambos viven en el mismo origen, asi que la eleccion se comparte. */
+(function(){
+  try{
+    var t=localStorage.getItem('gxp.tema');
+    if(t!=='dark'&&t!=='light'){
+      t=(window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light';
+    }
+    document.documentElement.setAttribute('data-theme',t);
+  }catch(e){ document.documentElement.setAttribute('data-theme','light'); }
+})();
+</script>
 <style>
 :root{
   --tinta:#14202E;
@@ -30,11 +43,73 @@
   --sans:"Source Sans 3",system-ui,sans-serif;
   --disp:"Archivo",system-ui,sans-serif;
   --mono:"IBM Plex Mono",ui-monospace,monospace;
+  --texto:#14202E;         /* texto principal: en claro coincide con --tinta */
+  --sup2:var(--sup2);          /* los grises de apoyo, antes escritos a mano */
+  --sup3:var(--sup3);
+  --sup4:var(--sup4);
+  --nav:var(--nav);
 }
+
+/* ═══════════ MODO OSCURO ═══════════
+   El sitio ya estaba escrito con tokens, asi que casi todo es redefinirlos.
+
+   OJO con --tinta: no se invierte. Ademas de texto es el FONDO de la cabecera
+   y de la tira de documentos, asi que darle un valor claro dejaria la cabecera
+   blanca con letra blanca encima. Por eso el texto se mudo a --texto, que es
+   lo unico que cambia de lado.
+
+   Los colores SEMANTICOS —granate, verde, ocre, rojo, azul y sus versiones
+   claras— tampoco se tocan: marcan estado en las tablas y el diagnostico, y
+   ahi el fondo palido con letra oscura se sigue leyendo. */
+:root[data-theme="dark"]{
+  --texto:#E4E8EC;
+  --tinta-70:#B3BECB;
+  --acero:#93A2B1;
+  --niebla:#0F172A;
+  --niebla-2:#1B2738;
+  --lienzo:#1E293B;
+  --linea:#33445A;
+  --sup2:#243449;
+  --sup3:#22344B;
+  --sup4:#1B2738;
+  --nav:rgba(15,23,42,.96);
+}
+:root[data-theme="dark"] body{ background:var(--niebla); color:var(--texto); }
+:root[data-theme="dark"] a{ color:#e08a9b; }
+
+/* El interruptor de tema, en la cabecera */
+.bt-tema{
+  position:absolute; top:0; right:0;
+  border:1px solid rgba(255,255,255,.28); background:rgba(255,255,255,.08); color:#EEF2F5;
+  width:38px; height:38px; border-radius:50%; cursor:pointer; font-size:15px;
+  display:flex; align-items:center; justify-content:center; transition:all .18s ease;
+}
+.bt-tema:hover{ background:rgba(255,255,255,.18); }
+:root[data-theme="dark"] .bt-tema{ color:#fbbf24; }
+
+/* «Cerrar sesion» no tenia estilo propio: se pintaba con el boton por defecto
+   del navegador, gris casi blanco con letra negra. En claro pasaba
+   desapercibido; sobre fondo oscuro es un rectangulo blanco. */
+:root[data-theme="dark"] #btSalir{
+  background:var(--sup2); color:var(--texto);
+  border:1px solid var(--linea); border-radius:var(--r); padding:6px 12px; cursor:pointer;
+}
+:root[data-theme="dark"] #btSalir:hover{ background:var(--niebla-2); }
+
+/* La pestana activa iba en granate (#7A1E2E), que sobre la barra oscura casi
+   no se distingue. Se aclara el mismo tono: sigue siendo el color de marca,
+   pero ahora se lee. */
+:root[data-theme="dark"] .navin button[aria-selected="true"]{
+  color:#e08a9b; border-bottom-color:#e08a9b;
+}
+:root[data-theme="dark"] h3.bloque .idx,
+:root[data-theme="dark"] .tesis .lead em{ color:#e08a9b; }
+
+
 *{box-sizing:border-box}
 html{scroll-behavior:smooth;scroll-padding-top:64px}
 body{
-  margin:0;background:var(--niebla);color:var(--tinta);
+  margin:0;background:var(--niebla);color:var(--texto);
   font-family:var(--sans);font-size:15.5px;line-height:1.6;
   -webkit-font-smoothing:antialiased;
 }
@@ -60,14 +135,14 @@ a{color:var(--granate)}
 .e-ok{color:#7FC0AE}.e-obs{color:#E0B25E}.e-cri{color:#E28B8B}
 
 /* ---------- NAV ---------- */
-nav{position:sticky;top:0;z-index:40;background:rgba(228,232,236,.96);backdrop-filter:blur(8px);border-bottom:1px solid var(--linea)}
+nav{position:sticky;top:0;z-index:40;background:var(--nav);backdrop-filter:blur(8px);border-bottom:1px solid var(--linea)}
 .navin{display:flex;gap:2px;overflow-x:auto;scrollbar-width:none}
 .navin::-webkit-scrollbar{display:none}
 .navin button{
   flex:0 0 auto;background:none;border:0;border-bottom:2px solid transparent;
   font-family:var(--disp);font-weight:600;font-size:13.5px;color:var(--acero);
   padding:15px 15px 13px;cursor:pointer;white-space:nowrap;transition:color .15s,border-color .15s}
-.navin button:hover{color:var(--tinta)}
+.navin button:hover{color:var(--texto)}
 .navin button[aria-selected="true"]{color:var(--granate);border-bottom-color:var(--granate)}
 .navin button:focus-visible{outline:2px solid var(--granate);outline-offset:-3px}
 
@@ -107,9 +182,9 @@ h3.bloque .idx{font-family:var(--mono);font-size:12px;color:var(--granate);font-
 .chip{background:var(--lienzo);border:1px solid var(--linea);border-radius:100px;padding:6px 14px;
   font-family:var(--disp);font-size:12.5px;font-weight:600;color:var(--acero);cursor:pointer;transition:.15s}
 .chip:hover{border-color:var(--acero)}
-.chip[aria-pressed="true"]{background:var(--tinta);border-color:var(--tinta);color:#fff}
+.chip[aria-pressed="true"]{background:var(--tinta);border-color:var(--texto);color:#fff}
 .chip:focus-visible{outline:2px solid var(--granate);outline-offset:2px}
-.buscador{flex:1;min-width:190px;background:var(--lienzo);border:1px solid var(--linea);padding:7px 12px;font-family:var(--sans);font-size:14px;color:var(--tinta)}
+.buscador{flex:1;min-width:190px;background:var(--lienzo);border:1px solid var(--linea);padding:7px 12px;font-family:var(--sans);font-size:14px;color:var(--texto)}
 .buscador:focus{outline:2px solid var(--granate);outline-offset:-1px}
 
 .hall{background:var(--lienzo);border:1px solid var(--linea);border-left:3px solid var(--acero);margin-bottom:10px}
@@ -127,18 +202,18 @@ h3.bloque .idx{font-family:var(--mono);font-size:12px;color:var(--granate);font-
 .tag.sv-critico{background:var(--rojo-cl);border-color:#DCA9A9;color:var(--rojo)}
 .tag.sv-alto{background:var(--ocre-cl);border-color:#D6C08E;color:#7A4C08}
 .tag.sv-medio{background:var(--azul-cl);border-color:#AEC4D3;color:var(--azul)}
-.tag.doc{background:#EDF0F2;color:var(--tinta-70)}
+.tag.doc{background:var(--sup3);color:var(--tinta-70)}
 .hall .det{padding:2px 18px 20px 84px;font-size:14.5px}
 .hall .det dt{font-family:var(--disp);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--acero);margin-top:14px}
 .hall .det dd{margin:4px 0 0}
-.hall .det dd.ev{font-family:var(--mono);font-size:12.5px;background:#F4F6F7;border-left:2px solid var(--niebla-2);padding:9px 12px;color:var(--tinta-70);white-space:pre-wrap}
+.hall .det dd.ev{font-family:var(--mono);font-size:12.5px;background:var(--sup2);border-left:2px solid var(--niebla-2);padding:9px 12px;color:var(--tinta-70);white-space:pre-wrap}
 @media(max-width:640px){.hall .det{padding-left:18px}}
 
 /* ---------- MATRIZ CONTRADICCIONES (firma) ---------- */
 .mtz{border:1px solid var(--linea);background:var(--lienzo);overflow-x:auto}
 .mtz table{border-collapse:collapse;width:100%;min-width:820px}
 .mtz th{font-family:var(--disp);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--acero);
-  text-align:left;padding:12px 14px;border-bottom:1px solid var(--linea);background:#F4F6F7;font-weight:600;vertical-align:bottom}
+  text-align:left;padding:12px 14px;border-bottom:1px solid var(--linea);background:var(--sup2);font-weight:600;vertical-align:bottom}
 .mtz th.d{border-left:1px solid var(--linea)}
 .mtz th .dd{display:block;font-family:var(--mono);font-size:10px;color:var(--granate);letter-spacing:.06em;margin-bottom:3px}
 .mtz td{padding:13px 14px;border-bottom:1px solid var(--niebla-2);vertical-align:top;font-size:13.5px;line-height:1.45}
@@ -155,28 +230,28 @@ h3.bloque .idx{font-family:var(--mono);font-size:12px;color:var(--granate);font-
 .tabla{border:1px solid var(--linea);background:var(--lienzo);overflow-x:auto}
 .tabla table{border-collapse:collapse;width:100%;min-width:700px;font-size:13.5px}
 .tabla th{font-family:var(--disp);font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--acero);
-  text-align:left;padding:11px 13px;border-bottom:1px solid var(--linea);background:#F4F6F7;font-weight:600;position:sticky;top:0}
+  text-align:left;padding:11px 13px;border-bottom:1px solid var(--linea);background:var(--sup2);font-weight:600;position:sticky;top:0}
 .tabla td{padding:10px 13px;border-bottom:1px solid #EAEEF0;vertical-align:top;line-height:1.45}
-.tabla tbody tr:hover{background:#F7F9FA}
+.tabla tbody tr:hover{background:var(--sup4)}
 .tabla tbody tr:last-child td{border-bottom:0}
 .num{text-align:right;font-family:var(--mono);font-size:12.5px}
 .pill{display:inline-block;font-family:var(--mono);font-size:10.5px;padding:2px 7px;letter-spacing:.03em;text-transform:uppercase;border:1px solid}
 .p-ok{background:var(--verde-cl);border-color:#A9C7BE;color:var(--verde)}
 .p-proc{background:var(--azul-cl);border-color:#AEC4D3;color:var(--azul)}
-.p-pend{background:#EDF0F2;border-color:var(--linea);color:var(--acero)}
+.p-pend{background:var(--sup3);border-color:var(--linea);color:var(--acero)}
 .p-obs{background:var(--ocre-cl);border-color:#D6C08E;color:#7A4C08}
 .p-cri{background:var(--rojo-cl);border-color:#DCA9A9;color:var(--rojo)}
 .alerta{color:var(--rojo);font-family:var(--mono);font-size:11px;cursor:help;font-weight:600}
 
 /* barra avance en tabla */
-.barra{position:relative;height:16px;background:#EDF0F2;min-width:96px}
+.barra{position:relative;height:16px;background:var(--sup3);min-width:96px}
 .barra i{position:absolute;inset:0 auto 0 0;display:block}
-.barra span{position:absolute;right:5px;top:-1px;font-family:var(--mono);font-size:11px;color:var(--tinta)}
+.barra span{position:absolute;right:5px;top:-1px;font-family:var(--mono);font-size:11px;color:var(--texto)}
 
 /* ---------- EDT / árbol cronograma ---------- */
 .edt{background:var(--lienzo);border:1px solid var(--linea)}
 .fase > summary{padding:14px 18px;cursor:pointer;list-style:none;display:flex;align-items:center;gap:12px;
-  border-bottom:1px solid var(--linea);background:#F4F6F7}
+  border-bottom:1px solid var(--linea);background:var(--sup2)}
 .fase > summary::-webkit-details-marker{display:none}
 .fase[open] > summary{background:var(--tinta);color:#fff}
 .fase > summary .fn{font-family:var(--disp);font-weight:700;font-size:15.5px}
@@ -185,7 +260,7 @@ h3.bloque .idx{font-family:var(--mono);font-size:12px;color:var(--granate);font-
 .etapa{border-bottom:1px solid #EAEEF0}
 .etapa > summary{padding:11px 18px 11px 34px;cursor:pointer;list-style:none;font-family:var(--disp);font-weight:600;font-size:14px}
 .etapa > summary::-webkit-details-marker{display:none}
-.etapa > summary:hover{background:#F7F9FA}
+.etapa > summary:hover{background:var(--sup4)}
 .act{padding:4px 18px 14px 34px}
 .act .an{font-family:var(--mono);font-size:11.5px;color:var(--granate);margin:12px 0 5px;letter-spacing:.02em}
 .tarea{display:flex;gap:12px;padding:6px 0 6px 16px;border-left:1px solid var(--niebla-2);font-size:13.5px;align-items:flex-start}
@@ -232,7 +307,7 @@ h3.bloque .idx{font-family:var(--mono);font-size:12px;color:var(--granate);font-
 .v2card h3{font-size:18px;margin:7px 0 9px}
 .v2card p{margin:0;font-size:13.5px;color:var(--tinta-70);line-height:1.5}
 .v2m{display:flex;gap:7px;flex-wrap:wrap;margin-top:13px;padding-top:11px;border-top:1px solid #EAEEF0}
-.v2m span{font-family:var(--mono);font-size:10.5px;color:var(--acero);background:#F4F6F7;
+.v2m span{font-family:var(--mono);font-size:10.5px;color:var(--acero);background:var(--sup2);
   border:1px solid var(--linea);padding:2px 7px;letter-spacing:.02em}
 .aviso-v2{background:var(--rojo-cl);border:1px solid #DCA9A9;border-left:3px solid var(--rojo);
   padding:16px 19px;font-size:14.5px;max-width:92ch;line-height:1.55}
@@ -291,6 +366,10 @@ h3.bloque .idx{font-family:var(--mono);font-size:12px;color:var(--granate);font-
 
 <header class="cab">
   <div class="wrap">
+    <button class="bt-tema" id="btTema" type="button" onclick="alternarTema()"
+            title="Cambiar de tema" aria-label="Cambiar de tema" aria-pressed="false">
+      <span id="icTema">☾</span>
+    </button>
     <div class="ceja">UNMSM · Oficina General de Planificación · Oficina de Racionalización</div>
     <h1>Centro de documentación del proyecto</h1>
     <p class="sub">Implementación de la Gestión por Procesos en las 20 Facultades. Los cuatro documentos de trabajo, revisados, interconectados y ordenados según el PMBOK 6.ª edición.</p>
@@ -619,5 +698,55 @@ window.GXP_ARRANCAR = function (p) {
 
 </script>
 <script src="assets/acceso.js"></script>
+
+<script>
+/* ── Tema claro / oscuro ───────────────────────────────────────────────────
+   La preferencia se guarda en la misma clave que Dashboard.html, y como los
+   dos viven en el mismo origen, basta con eso para que al abrir cualquiera de
+   los dos ya salga en el tema elegido.
+
+   Para el cambio EN CALIENTE hace falta avisar al iframe: el dashboard ya
+   esta cargado y no va a releer localStorage por su cuenta. Se le manda un
+   postMessage y el escucha. */
+(function () {
+  const CLAVE = 'gxp.tema';
+
+  function pinta(tema) {
+    const oscuro = tema === 'dark';
+    document.documentElement.setAttribute('data-theme', oscuro ? 'dark' : 'light');
+    const ic = document.getElementById('icTema');
+    if (ic) ic.textContent = oscuro ? '☀' : '☾';
+    const bt = document.getElementById('btTema');
+    if (bt) {
+      bt.setAttribute('aria-pressed', oscuro ? 'true' : 'false');
+      bt.title = oscuro ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro';
+    }
+    const marco = document.getElementById('marco-dashboard');
+    if (marco && marco.contentWindow) {
+      marco.contentWindow.postMessage({ tipo: 'gxp:tema', tema: oscuro ? 'dark' : 'light' }, '*');
+    }
+  }
+
+  window.alternarTema = function () {
+    const actual = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
+    const nuevo = actual === 'dark' ? 'light' : 'dark';
+    pinta(nuevo);
+    try { localStorage.setItem(CLAVE, nuevo); } catch (e) { /* modo privado */ }
+  };
+
+  // El atributo ya viene puesto por el script de arriba; esto coloca el icono
+  // y, cuando el iframe termine de cargar, le pasa el tema.
+  const inicial = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => pinta(inicial));
+  } else { pinta(inicial); }
+
+  window.addEventListener('load', function () {
+    const marco = document.getElementById('marco-dashboard');
+    if (marco) marco.addEventListener('load', () => pinta(
+      document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light'));
+  });
+})();
+</script>
 </body>
 </html>

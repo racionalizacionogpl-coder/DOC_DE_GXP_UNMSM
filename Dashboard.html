@@ -1146,6 +1146,16 @@ function aplicarTema(tema) {
     }
 }
 
+// El tablero se incrusta en interno.html. Cuando alli cambian el tema, este
+// documento ya esta cargado y no va a releer localStorage solo, asi que la
+// pagina de fuera le avisa por postMessage y aqui se escucha.
+window.addEventListener('message', function (ev) {
+    const d = ev.data;
+    if (d && d.tipo === 'gxp:tema' && (d.tema === 'dark' || d.tema === 'light')) {
+        aplicarTema(d.tema);
+    }
+});
+
 function alternarTema() {
     const nuevo = temaActual() === 'dark' ? 'light' : 'dark';
     aplicarTema(nuevo);
@@ -2591,9 +2601,13 @@ function estiloDeFondo(paleta, indice) {
     if (indice === undefined || indice === null) return '';
     const color = (paleta || [])[indice];
     if (!color) return '';
+    // El color del texto lo decide ESTE fondo, no el tema de la pagina. Antes
+    // solo se forzaba sobre fondos oscuros y el resto heredaba el color de la
+    // tabla: en modo oscuro eso dejaba letra clara sobre los ambares y rosas
+    // palidos que trae el libro, y la fila no se leia.
     const claro = luminancia(color) > 0.55;
     return ' style="background-color:' + escaparHtml(color) +
-           (claro ? '' : ';color:#fff') + '"';
+           ';color:' + (claro ? '#1e293b' : '#ffffff') + '"';
 }
 
 /** Luminancia relativa aproximada de un color #rgb o #rrggbb, de 0 a 1. */
