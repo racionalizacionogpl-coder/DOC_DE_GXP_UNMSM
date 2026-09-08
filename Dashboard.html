@@ -190,6 +190,11 @@
         [data-theme="dark"] .ranking-valor{ color:var(--texto2); }
         [data-theme="dark"] .ranking-titulo{ color:var(--text); }
         [data-theme="dark"] .entity-title{ color:var(--text); }
+        /* La cabecera de las tarjetas de entidad lleva un degradado BLANCO,
+           no un background-color: por eso quedaba como un renglon blanco con
+           el titulo, ya claro, encima. Se redefine el degradado. */
+        [data-theme="dark"] .entity-head{ background:linear-gradient(180deg,var(--sup2),var(--card));
+            border-bottom-color:var(--line); }
 
         /* .btn-depth pinta un degradado BLANCO con el atajo «background», que
            gana sobre cualquier background-color: por eso los botones seguian
