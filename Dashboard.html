@@ -176,7 +176,7 @@
         /* .db-btn se penso para <button>; en un enlace hay que quitarle el subrayado. */
         .sheet-header a.db-btn { text-decoration: none; white-space: nowrap; }
         /* Barra de hojas propia. La de Google no se pinta de forma fiable dentro
-           de un iframe —con rm=minimal desaparece, y sin el tampoco asoma—, asi
+           de un iframe, asi
            que el cambio de hoja lo lleva el tablero: cada boton reapunta el
            visor al gid de su hoja. */
         .sheet-tabs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; }
@@ -610,25 +610,17 @@
                      del tablero. Las cifras y las tablas interpretadas siguen en
                      Dashboard y en Analisis.
 
-SOBRE EL ENDPOINT. Google no deja tener a la vez interfaz limpia,
-                     pestanas de hojas y solo lectura estricto sin publicar el libro:
-                       · /preview y /htmlembed  limpios y de solo lectura, pero pintan
-                                       UNA sola hoja: sin barra de pestanas. Probados.
-                       · rm=minimal    oculta menus y barra de herramientas, pero en
-                                       ese mismo recorte se lleva las pestanas.
-                                       Probado: por eso ya no esta aqui.
-                       · /pubhtml      limpio, con pestanas y de solo lectura, pero
-                                       exige «Publicar en la web», que deja el libro
-                                       accesible a cualquiera con la URL, sin sesion.
-                       · /edit + widget=true  ← el elegido. Es el unico que conserva
-                                       las pestanas sin publicar nada. widget=true
-                                       quita la cabecera de Google Docs; la barra de
-                                       herramientas se le queda a quien abre el libro
-                                       con permiso de escritura, y es el precio de
-                                       poder cambiar de hoja.
-                     Quien entra con el enlace compartido, que es de lectura, ni edita
-                     ni ve esa barra. Para cerrarlo tambien a los editores hay que
-                     pasar a /pubhtml y asumir la publicacion. -->
+                     SOBRE LOS PARAMETROS. rm=minimal oculta los menus y la barra de
+                     herramientas de Sheets, pero de paso borra la barra inferior de
+                     pestanas del propio Google. Antes eso lo descartaba, porque era la
+                     unica manera de cambiar de hoja. Ahora las pestanas las pinta el
+                     tablero —ver pintarPestanasDelLibro()—, asi que rm=minimal ya no
+                     cuesta nada y el visor queda limpio.
+
+                     Probados y descartados: /preview y /htmlembed recortan la interfaz
+                     igual de bien, pero solo pintan UNA hoja. /pubhtml daria ademas
+                     solo lectura estricto, pero exige «Publicar en la web», que deja
+                     el libro accesible a cualquiera con la URL y sin sesion. -->
                 <div class="sheet-header">
                     <div>
                         <h2>Libro de revision interna</h2>
@@ -644,7 +636,7 @@ SOBRE EL ENDPOINT. Google no deja tener a la vez interfaz limpia,
 
                 <div class="sheet-visor">
                     <iframe id="sheetVisor"
-                        src="https://docs.google.com/spreadsheets/d/1oYBAHp-Bd0V8un5hUAWdK1jKbcbdsROH4IOyM0MAmFk/edit?usp=sharing&amp;widget=true&amp;headers=false#gid=1085473862"
+                        src="https://docs.google.com/spreadsheets/d/1oYBAHp-Bd0V8un5hUAWdK1jKbcbdsROH4IOyM0MAmFk/edit?usp=sharing&amp;widget=true&amp;headers=false&amp;rm=minimal#gid=1085473862"
                         title="Libro 4_REVISION_INTERNA DE_AVANCES_ACTIVIDADES"
                         loading="lazy"></iframe>
                 </div>
@@ -1929,7 +1921,7 @@ function escaparHtml(s) {
 
 function urlDeHoja(gid) {
     return 'https://docs.google.com/spreadsheets/d/' + LIBRO_ID +
-           '/edit?usp=sharing&widget=true&headers=false#gid=' + encodeURIComponent(gid);
+           '/edit?usp=sharing&widget=true&headers=false&rm=minimal#gid=' + encodeURIComponent(gid);
 }
 
 function verHoja(gid, boton) {
