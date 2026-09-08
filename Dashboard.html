@@ -4,7 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard Gestion por Procesos - OGPL UNMSM</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- El tema se fija ANTES de pintar nada. Si se dejara al script del final,
+     al recargar en oscuro se veria un destello claro mientras carga. -->
+<script>
+(function(){
+  try{
+    var t = localStorage.getItem('gxp.tema');
+    if(t!=='dark' && t!=='light'){
+      t = (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light';
+    }
+    document.documentElement.setAttribute('data-theme', t);
+  }catch(e){ document.documentElement.setAttribute('data-theme','light'); }
+})();
+</script>
+<script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -88,7 +101,151 @@
         .animate-fade-in { animation: fadeIn 0.4s ease; }
 
         /* ===== ANALISIS ===== */
-        :root{ --navy:#10233f; --navy2:#173355; --blue:#3f86ef; --blue2:#78aaf7; --bg:#eef3f8; --card:#ffffff; --text:#162742; --muted:#71829a; --green:#16a67f; --red:#ee6868; --line:#e8edf3; --shadow:0 8px 24px rgba(26,48,77,.09); }
+        :root{ --navy:#10233f; --navy2:#173355; --blue:#3f86ef; --blue2:#78aaf7; --bg:#eef3f8; --card:#ffffff; --text:#162742; --muted:#71829a; --green:#16a67f; --red:#ee6868; --line:#e8edf3; --shadow:0 8px 24px rgba(26,48,77,.09);
+            /* Superficies secundarias, que antes iban con el color escrito a
+               mano en cada sitio. Tenerlas aqui es lo que permite que el modo
+               oscuro se resuelva redefiniendo, y no persiguiendo hexadecimales. */
+            --sup2:#f8fbff; --sup3:#eff4f8; --pagina:#e8eef3;
+            --texto2:#41566d; --texto3:#536980; --tenue:#94a3b8;
+            --borde-input:#d8e1eb; --raya:#f1f5f9; }
+
+        /* ═══════════════ MODO OSCURO ═══════════════
+           Solo se redefinen los tokens y se corrigen las superficies que
+           Tailwind fija por utilidad (bg-white, text-corp-*). Los colores
+           CORPORATIVOS y la semaforizacion NO se tocan: los verdes, ambares y
+           rojos de estado, las barras de los graficos y los colores que trae
+           el propio libro siguen siendo los mismos, porque son informacion y
+           no decoracion.
+
+           Los selectores combinan [data-theme] con la clase a proposito: pesan
+           mas que la utilidad suelta de Tailwind, que entra por el Play CDN
+           DESPUES de este bloque y si no, ganaria por orden. */
+        [data-theme="dark"]{
+            --bg:#0f172a; --card:#1e293b; --text:#e2e8f0; --muted:#94a3b8;
+            --line:#334155; --shadow:0 8px 24px rgba(0,0,0,.45);
+            --sup2:#243449; --sup3:#2b3b52; --pagina:#0f172a;
+            --texto2:#cbd5e1; --texto3:#b6c2d1; --tenue:#8296ad;
+            --borde-input:#3d4f66; --raya:#243449;
+        }
+        [data-theme="dark"] body,
+        body[data-theme="dark"]{ background-color:var(--pagina); color:var(--text); }
+
+        /* Superficies claras de Tailwind */
+        [data-theme="dark"] .bg-white{ background-color:var(--card) !important; }
+        [data-theme="dark"] .bg-white\/30{ background-color:rgba(30,41,59,.55) !important; }
+        [data-theme="dark"] .bg-white\/50{ background-color:rgba(30,41,59,.65) !important; }
+        [data-theme="dark"] .border-white\/60{ border-color:var(--line) !important; }
+        [data-theme="dark"] .text-corp-dark{ color:var(--text) !important; }
+        [data-theme="dark"] .text-corp-textmain{ color:var(--text) !important; }
+        [data-theme="dark"] .text-corp-textmuted{ color:var(--muted) !important; }
+        [data-theme="dark"] .bg-corp-dark{ background-color:#0b1220 !important; }
+
+        /* Tarjetas y paneles propios */
+        [data-theme="dark"] .glass-card{ background:linear-gradient(145deg,#1e293b,#182130);
+            border-color:var(--line); box-shadow:0 10px 20px rgba(0,0,0,.35); }
+        [data-theme="dark"] .glass-card:hover{ box-shadow:0 15px 30px rgba(0,0,0,.45); }
+        [data-theme="dark"] .data-panel,
+        [data-theme="dark"] .entity-card,
+        [data-theme="dark"] .clasif-panel{ background:var(--card); border-color:var(--line); }
+
+        /* Tablas: cabecera, celdas, franjas y el hover */
+        [data-theme="dark"] .data-toolbar{ background:linear-gradient(180deg,var(--sup2),var(--card)); border-color:var(--line); }
+        [data-theme="dark"] .data-table th{ background:var(--sup3); color:var(--text); }
+        [data-theme="dark"] .data-table td{ color:var(--texto2); border-color:var(--line); }
+        [data-theme="dark"] .data-table tbody tr:nth-child(even){ background:var(--sup2); }
+        [data-theme="dark"] .data-table tbody tr:hover{ background:#31405a; }
+        [data-theme="dark"] .data-meta,
+        [data-theme="dark"] .data-footer{ background:var(--sup2); color:var(--muted); border-color:var(--line); }
+        [data-theme="dark"] .criterios{ color:var(--texto3); }
+        [data-theme="dark"] .empty-state{ color:var(--muted); }
+
+        /* Controles */
+        [data-theme="dark"] select,
+        [data-theme="dark"] input[type="text"]{ background:var(--sup2) !important; color:var(--text) !important;
+            border-color:var(--borde-input) !important; }
+        [data-theme="dark"] .db-btn{ background:var(--sup2); color:var(--texto2); border-color:var(--borde-input); }
+        [data-theme="dark"] .db-btn:hover{ background:var(--sup3); }
+        [data-theme="dark"] .sheet-tab{ background:var(--sup2); color:var(--texto3); border-color:var(--line); }
+        [data-theme="dark"] .sheet-header h2{ color:var(--text); }
+        [data-theme="dark"] .sheet-header p,
+        [data-theme="dark"] .sheet-nota{ color:var(--muted); }
+
+        /* Emergentes */
+        [data-theme="dark"] .notif-pop,
+        [data-theme="dark"] .ayuda-pop{ background:var(--card); border-color:var(--line);
+            box-shadow:0 22px 50px rgba(0,0,0,.55); }
+        [data-theme="dark"] .notif-cab,
+        [data-theme="dark"] .ayuda-cab{ background:linear-gradient(180deg,var(--sup2),var(--card));
+            color:var(--text); border-color:var(--line); }
+        [data-theme="dark"] .notif-fila{ border-color:var(--raya); }
+        [data-theme="dark"] .notif-rotulo{ color:var(--texto3); }
+        [data-theme="dark"] .notif-rotulo b{ color:var(--text); }
+        [data-theme="dark"] .ayuda-intro{ color:var(--texto2); }
+        [data-theme="dark"] .ayuda-item{ border-left-color:#2f4468; }
+        [data-theme="dark"] .ayuda-item span{ color:var(--texto3); }
+
+        /* Rankings y clasificacion */
+        [data-theme="dark"] .ranking-fila:hover{ background:rgba(255,255,255,.06); }
+        [data-theme="dark"] .ranking-nombre,
+        [data-theme="dark"] .ranking-valor{ color:var(--texto2); }
+        [data-theme="dark"] .ranking-titulo{ color:var(--text); }
+        [data-theme="dark"] .entity-title{ color:var(--text); }
+
+        /* .btn-depth pinta un degradado BLANCO con el atajo «background», que
+           gana sobre cualquier background-color: por eso los botones seguian
+           saliendo como circulos blancos. Hay que redefinir el degradado, no
+           el color. Y sus sombras llevan un realce blanco al 90% que sobre
+           fondo oscuro se ve como un halo. */
+        [data-theme="dark"] .btn-depth{
+            background:linear-gradient(145deg,#243449,#18222f);
+            box-shadow:5px 5px 10px rgba(0,0,0,.45), -5px -5px 10px rgba(255,255,255,.04);
+            border-color:rgba(255,255,255,.07);
+        }
+        [data-theme="dark"] .btn-depth:hover{ box-shadow:6px 6px 14px rgba(0,0,0,.55), -6px -6px 14px rgba(255,255,255,.06); }
+        [data-theme="dark"] .nav-btn.active{ background:linear-gradient(145deg,#2b3b52,#1d2836); }
+
+        /* Panel de clasificacion: el texto venia en gris oscuro. */
+        [data-theme="dark"] .clasif-item{ color:var(--texto3); }
+        [data-theme="dark"] .clasif-item:hover{ color:var(--text); }
+        [data-theme="dark"] .clasif-grupo-titulo{ color:var(--muted); }
+
+        /* La pastilla neutra de «sin revision anterior». Las de subida y bajada
+           NO se tocan: verde y rojo ahi son informacion, no adorno. */
+        [data-theme="dark"] .bg-slate-100{ background-color:var(--sup3) !important; }
+        [data-theme="dark"] .border-slate-200{ border-color:var(--line) !important; }
+        [data-theme="dark"] .text-slate-500{ color:var(--muted) !important; }
+
+        /* El aviso de «Sin conexion» va en rojo 600, que sobre fondo casi negro
+           pierde legibilidad. Se aclara el tono conservando el significado:
+           sigue siendo rojo, y sigue siendo el unico rojo de la cabecera. */
+        [data-theme="dark"] .text-red-600{ color:#f87171 !important; }
+
+        /* Pestanas de anexo: la inactiva iba en un azul palido de fondo claro. */
+        [data-theme="dark"] .tab-ana{ background:var(--sup3); color:var(--texto3); }
+        [data-theme="dark"] .tab-ana.active{ background:var(--blue); color:#fff; }
+
+        /* Tarjeta de estado seleccionada: el celeste de seleccion no se lee
+           sobre oscuro. Se conserva el AZUL como senal de «esta elegida»,
+           pero en un tono que funcione de fondo. */
+        [data-theme="dark"] .status-filter.active-status,
+        [data-theme="dark"] .big-metric.status-filter.active-status{
+            background:#1d3557; border-color:#4d82d8; }
+        [data-theme="dark"] .status-filter.active-status .m-title,
+        [data-theme="dark"] .status-filter.active-status .m-change,
+        [data-theme="dark"] .big-metric.status-filter.active-status h4,
+        [data-theme="dark"] .big-metric.status-filter.active-status .chg{ color:#8ab4f8; }
+        [data-theme="dark"] .metric,
+        [data-theme="dark"] .big-metric{ background:var(--sup2); border-color:var(--line); }
+        [data-theme="dark"] .m-title,
+        [data-theme="dark"] .m-change{ color:var(--muted); }
+
+        /* Los tres titulos del Anexo 3 traen el color en un style= del propio
+           HTML, y un atributo inline gana a cualquier hoja: hace falta
+           !important para poder corregirlos sin tocar el marcado. */
+        [data-theme="dark"] #panel-anexo3 h3{ color:var(--text) !important; }
+
+        /* El interruptor, ya en sol */
+        [data-theme="dark"] #btnTema{ color:#fbbf24 !important; }
         .switcher{margin:0 0 16px;display:flex;gap:8px;align-items:center}
         .tab-ana{border:0;background:#dce5ef;color:#60738a;font-weight:800;font-size:12px;padding:10px 18px;border-radius:12px;cursor:pointer;transition:all .2s}
         .tab-ana.active{background:var(--blue);color:#fff;box-shadow:0 6px 14px rgba(63,134,239,.24)}
@@ -417,7 +574,11 @@
             </button>
         </div>
         <div class="mt-auto flex flex-col gap-4">
-             <button class="w-12 h-12 bg-white rounded-full flex items-center justify-center text-corp-textmuted hover:text-corp-blue transition btn-depth"><i class="fa-solid fa-gear"></i></button>
+             <button id="btnTema" type="button" onclick="alternarTema()"
+                     class="w-12 h-12 bg-white rounded-full flex items-center justify-center text-corp-textmuted hover:text-corp-blue transition btn-depth"
+                     title="Cambiar a modo oscuro" aria-label="Cambiar tema" aria-pressed="false">
+                 <i class="fa-solid fa-moon" id="iconoTema"></i>
+             </button>
         </div>
     </aside>
 
@@ -425,7 +586,7 @@
     <main class="flex-1 flex flex-col lg:h-full lg:overflow-hidden relative min-w-0">
         <header class="flex flex-col xl:flex-row xl:justify-between xl:items-center gap-4 px-4 sm:px-6 lg:px-8 pt-6 lg:pt-8 pb-4 lg:pb-6 shrink-0">
             <div class="flex items-center gap-4">
-                <div class="p-3 bg-white rounded-xl btn-depth"><i class="fa-solid fa-users text-2xl text-corp-dark"></i></div>
+                <div class="p-3 bg-white rounded-xl btn-depth"><i class="fa-solid fa-diagram-project text-2xl text-corp-dark"></i></div>
                 <div>
                     <h1 class="text-xl sm:text-2xl lg:text-3xl font-extrabold text-corp-dark tracking-tight">Gestion por Procesos <span class="font-light text-corp-textmuted">Panel de Control</span></h1>
                     <p class="text-corp-textmuted text-sm mt-1 font-medium">Oficina de Racionalizacion OGPL UNMSM | <span id="sello-datos">Datos incrustados</span> <button onclick="refrescarTablero(true)" title="Actualizar ahora" class="ml-1 text-corp-blue hover:text-corp-dark transition align-middle"><i class="fa-solid fa-rotate text-xs"></i></button></p>
@@ -936,6 +1097,72 @@ function serieRevisiones(clave) {
         .map(r => (r[clave] === undefined || r[clave] === null) ? null : Number(r[clave]))
         .filter(v => v !== null);
 }
+
+// ============================================================
+// TEMA CLARO / OSCURO
+// ------------------------------------------------------------
+// El tema vive en un atributo data-theme sobre <html>, y todo el
+// modo oscuro se resuelve en CSS redefiniendo tokens. Aqui solo
+// se conmuta el atributo, se guarda la eleccion y se repintan
+// los graficos, que es lo unico que el CSS no alcanza: Chart.js
+// dibuja sus ejes y rejillas en un lienzo, no en el DOM.
+//
+// La preferencia se lee en un <script> temprano, antes de pintar,
+// para que no haya un destello claro al recargar en oscuro.
+// ============================================================
+const CLAVE_TEMA = 'gxp.tema';
+
+function temaActual() {
+    return document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
+}
+
+function aplicarTema(tema) {
+    const oscuro = tema === 'dark';
+    document.documentElement.setAttribute('data-theme', oscuro ? 'dark' : 'light');
+
+    const icono = document.getElementById('iconoTema');
+    if (icono) icono.className = 'fa-solid ' + (oscuro ? 'fa-sun' : 'fa-moon');
+
+    const bt = document.getElementById('btnTema');
+    if (bt) {
+        bt.setAttribute('aria-pressed', oscuro ? 'true' : 'false');
+        bt.title = oscuro ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro';
+    }
+
+    // Chart.js pinta en <canvas>: ni el CSS ni las variables le llegan. Hay
+    // que decirle el color del texto y rehacer los graficos, o los ejes se
+    // quedan en gris oscuro sobre fondo oscuro.
+    if (typeof Chart !== 'undefined') {
+        Chart.defaults.color = oscuro ? '#94a3b8' : '#64748b';
+        Chart.defaults.borderColor = oscuro ? 'rgba(255,255,255,.10)' : 'rgba(0,0,0,.05)';
+        [initCharts, pintarTendencias].forEach(paso => {
+            try { paso(); } catch (e) { /* aun no hay grafico que rehacer */ }
+        });
+    }
+}
+
+function alternarTema() {
+    const nuevo = temaActual() === 'dark' ? 'light' : 'dark';
+    aplicarTema(nuevo);
+    try { localStorage.setItem(CLAVE_TEMA, nuevo); } catch (e) { /* modo privado */ }
+}
+
+// Al arrancar se respeta lo guardado y, si no hay nada, lo que pida el
+// sistema operativo. El atributo ya puede venir puesto por el script
+// temprano; esto ademas coloca el icono y avisa a Chart.js.
+(function () {
+    let guardado = null;
+    try { guardado = localStorage.getItem(CLAVE_TEMA); } catch (e) {}
+    if (guardado !== 'dark' && guardado !== 'light') {
+        guardado = (window.matchMedia &&
+                    window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light';
+    }
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', () => aplicarTema(guardado));
+    } else {
+        aplicarTema(guardado);
+    }
+})();
 
 // ============================================================
 // AYUDA CONTEXTUAL · que muestra la vista que se esta viendo
