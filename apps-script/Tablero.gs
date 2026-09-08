@@ -160,7 +160,12 @@ function construirTablero_() {
     historial: historial,
     registros: registros.filas,
     cobertura: registros.cobertura,
-    recorte: registros.recorte
+    recorte: registros.recorte,
+    // Nombre y gid de cada hoja visible del libro. El tablero pinta con esto
+    // su propia barra de pestanas sobre el visor incrustado: la de Google no
+    // aparece de forma fiable dentro de un iframe, y sin ella el libro se
+    // quedaba en una sola hoja.
+    hojas: hojasDelLibro_(libro)
   };
 }
 
@@ -181,6 +186,21 @@ function leerHojaTexto_(libro, nombre) {
   const hoja = buscarHoja_(libro, nombre);
   if (!hoja || hoja.getLastRow() < 2) return [];
   return hoja.getDataRange().getDisplayValues().slice(1);
+}
+
+/**
+ * Las hojas visibles del libro, en su orden, con el gid que las direcciona.
+ *
+ * El gid es lo que va en «#gid=…» de la URL del visor, asi que con esta lista
+ * el tablero puede ofrecer el cambio de hoja sin depender de que Google pinte
+ * su barra de pestanas dentro del iframe.
+ */
+function hojasDelLibro_(libro) {
+  return libro.getSheets()
+    .filter(function (h) { return !h.isSheetHidden(); })
+    .map(function (h) {
+      return { nombre: h.getName(), gid: String(h.getSheetId()) };
+    });
 }
 
 /** La fila de titulos de una hoja, o [] si la hoja no esta. */
