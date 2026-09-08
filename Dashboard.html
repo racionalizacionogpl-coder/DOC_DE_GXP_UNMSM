@@ -173,6 +173,28 @@
         .sheet-header { display: flex; justify-content: space-between; align-items: flex-end; gap: 16px; flex-wrap: wrap; margin-bottom: 16px; }
         .sheet-header h2 { margin: 0; font-size: 15px; font-weight: 800; color: #162742; letter-spacing: -0.01em; }
         .sheet-header p { margin: 4px 0 0 0; font-size: 11px; color: #71829a; font-weight: 600; }
+        /* Ayuda contextual. Se abre a la DERECHA del icono, no debajo: la barra
+           lateral mide 80 px y un panel colgando hacia abajo se saldria de la
+           pantalla. El alto se limita y desplaza dentro, porque el texto de
+           algunas vistas es largo. */
+        .ayuda-caja { position: relative; }
+        .ayuda-pop { position: absolute; left: calc(100% + 14px); top: -4px; width: 360px;
+                     max-height: 78vh; overflow-y: auto; z-index: 70;
+                     background: #fff; border: 1px solid var(--line); border-radius: 16px;
+                     box-shadow: 0 22px 50px rgba(15,26,46,.22); }
+        .ayuda-cab { position: sticky; top: 0; display: flex; align-items: center; justify-content: space-between;
+                     gap: 10px; padding: 14px 16px; background: linear-gradient(180deg,#f8fbff,#fff);
+                     border-bottom: 1px solid var(--line); font-size: 13px; font-weight: 900; color: #162742; }
+        .ayuda-cerrar { border: 0; background: transparent; color: #94a3b8; cursor: pointer; font-size: 14px; line-height: 1; padding: 2px 4px; }
+        .ayuda-cerrar:hover { color: #334155; }
+        .ayuda-cuerpo { padding: 14px 16px 16px 16px; }
+        .ayuda-intro { margin: 0 0 12px 0; font-size: 11.5px; line-height: 1.55; color: #41566d; font-weight: 600; }
+        .ayuda-item { margin-bottom: 11px; padding-left: 12px; border-left: 3px solid #dbeafe; }
+        .ayuda-item:last-child { margin-bottom: 0; }
+        .ayuda-item b { display: block; font-size: 11px; font-weight: 800; color: #1d4ed8; margin-bottom: 2px; }
+        .ayuda-item span { font-size: 11px; line-height: 1.55; color: #536980; font-weight: 500; }
+        @media (max-width: 1100px) { .ayuda-pop { width: 300px; } }
+
         /* Campana de variaciones. El popover va absoluto para no empujar la
            cabecera al abrirse, y colgado de .notif-caja, que es lo que le da
            el punto de anclaje justo debajo del icono. */
@@ -349,8 +371,22 @@
 
     <!-- SIDEBAR -->
     <aside class="hidden lg:flex w-20 bg-white/30 flex-col items-center py-8 gap-10 border-r border-white/60 z-10 backdrop-blur-sm shrink-0">
-        <div class="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-corp-dark text-2xl btn-depth">
-            <i class="fa-solid fa-layer-group"></i>
+        <div class="ayuda-caja">
+            <button id="btnAyuda" type="button" onclick="alternarAyuda(event)"
+                    aria-haspopup="dialog" aria-expanded="false"
+                    title="Que muestra esta vista"
+                    class="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-corp-dark text-2xl btn-depth hover:text-corp-blue transition">
+                <i class="fa-solid fa-circle-info"></i>
+            </button>
+            <div class="ayuda-pop" id="ayudaPop" hidden role="dialog" aria-label="Ayuda de la vista">
+                <div class="ayuda-cab">
+                    <span id="ayudaTitulo">Ayuda</span>
+                    <button type="button" class="ayuda-cerrar" onclick="cerrarAyuda()" aria-label="Cerrar">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+                <div class="ayuda-cuerpo" id="ayudaCuerpo"></div>
+            </div>
         </div>
         <div class="flex flex-col gap-6 mt-4">
             <button id="nav-dashboard" class="nav-btn w-12 h-12 bg-white rounded-full flex items-center justify-center text-corp-textmuted hover:text-corp-blue transition btn-depth" title="Dashboard" onclick="switchTab('dashboard')">
@@ -885,6 +921,119 @@ function serieRevisiones(clave) {
 }
 
 // ============================================================
+// AYUDA CONTEXTUAL · que muestra la vista que se esta viendo
+// ------------------------------------------------------------
+// La «ruta» de este tablero son dos cosas a la vez: la pestana
+// principal (currentView) y, dentro de Analisis, la subpestana
+// del anexo. Esa segunda no guarda estado en ninguna variable
+// —switchAnexoTab solo mueve clases—, asi que se lee del DOM.
+// Leerla de ahi en vez de duplicarla en un let evita que las dos
+// copias se separen: la clase .active ES el estado.
+// ============================================================
+const AYUDA = {
+    dashboard: {
+        titulo: 'Vista de Dashboard',
+        intro: 'Consolida el progreso global de la Gestión por Procesos de la universidad, ' +
+               'ofreciendo una visión panorámica a través de las siguientes áreas:',
+        items: [
+            ['Tarjetas de KPIs', 'Exhiben el avance acumulado y la tendencia de crecimiento diario, tanto de la Fase 1 en general como de los Anexos 1, 3 y 4.'],
+            ['Filtros de Facultades', 'Panel interactivo con las 20 facultades y su respectiva carga de procesos (nivel 0 y subprocesos). Al seleccionar una o varias dependencias, la pantalla se actualiza automáticamente para reflejar solo esa información.'],
+            ['Gráficos Comparativos', 'Ilustran mediante barras el progreso por facultad en los distintos anexos, complementados con el volumen de procesos y productos registrados.'],
+            ['Semáforo de Estado', 'Leyenda visual que clasifica el nivel de cumplimiento de las facultades (100%, >80% y rezagadas en rojo), facilitando el seguimiento y la toma de decisiones.']
+        ]
+    },
+    anexo1: {
+        titulo: 'Vista de Análisis · Anexo 1',
+        intro: 'Diseñada para auditar a detalle la calidad de los datos del inventario de procesos de la Fase 1.',
+        items: [
+            ['Filtros de Facultades', 'Permite aislar la información para evaluar los registros de dependencias específicas.'],
+            ['Tarjetas de Estado y Rankings', 'Desglosan el volumen total en Productos, Procesos y Subprocesos, clasificándolos como «Conformes», «Observados» o «Sin Registros». Además, incluyen un ranking de las facultades con mayor cantidad de registros aprobados.'],
+            ['Tabla de Detalle Operativo', 'Vista tabular exhaustiva con menús desplegables para filtros precisos (por facultad, proceso de nivel 0 o tipo de producto). Muestra campos clave como código, nombre, estado de cumplimiento y observaciones (las cuales deben subsanarse para alcanzar el 100% y avanzar a la siguiente fase).']
+        ]
+    },
+    anexo3: {
+        titulo: 'Vista de Análisis · Anexo 3',
+        intro: 'Enfocada exclusivamente en la revisión de la completitud y estructura de las Fichas de Caracterización.',
+        items: [
+            ['Filtros de Facultades', 'Panel interactivo que actualiza instantáneamente las métricas según las dependencias seleccionadas.'],
+            ['Tarjetas de Estado y Rankings', 'Auditan los componentes estructurales del anexo (Fichas, Campos y Denominación). Clasifican los registros en «Conformes», «Observados», «Sin Registros» o «Críticos» (sin producto final), y muestran un ranking de desempeño por facultad.'],
+            ['Tabla de Detalle Operativo', 'Registro tabular de cada ficha que detalla el porcentaje de avance individual, la cantidad exacta de celdas/campos faltantes y las observaciones específicas para su corrección directa.']
+        ]
+    },
+    database: {
+        titulo: 'Vista de Base de Datos',
+        intro: 'Proporciona acceso directo a la matriz de datos crudos («Libro de revisión interna») ' +
+               'que alimenta todos los indicadores del panel.',
+        items: [
+            ['Filtros de Facultades', 'Acota los registros de la tabla central para visualizar únicamente la información de las áreas seleccionadas.'],
+            ['Herramientas de Búsqueda y Filtros Rápidos', 'Incluye una barra de búsqueda libre (por código, nombre u observación) y botones para alternar ágilmente entre las distintas hojas de revisión.'],
+            ['Acceso a Google Sheets', 'Botón de acción rápida que redirige al usuario al documento maestro original en la nube, ideal para consultas directas a la base de datos fuente.']
+        ]
+    }
+};
+
+/**
+ * Que ficha de ayuda toca. En Analisis no basta la pestana principal: hay que
+ * mirar cual de los dos anexos esta abierto, y eso vive en la clase .active
+ * del boton, que es donde switchAnexoTab lo deja.
+ */
+function claveDeAyuda() {
+    if (currentView === 'analisis') {
+        const marcada = document.querySelector('.tab-ana.active');
+        const anexo = marcada && marcada.dataset ? marcada.dataset.target : null;
+        return AYUDA[anexo] ? anexo : 'anexo1';
+    }
+    return AYUDA[currentView] ? currentView : 'dashboard';
+}
+
+function renderAyuda() {
+    const ficha = AYUDA[claveDeAyuda()];
+    const titulo = document.getElementById('ayudaTitulo');
+    const cuerpo = document.getElementById('ayudaCuerpo');
+    if (!ficha || !cuerpo) return;
+
+    if (titulo) titulo.textContent = ficha.titulo;
+    cuerpo.innerHTML =
+        '<p class="ayuda-intro">' + escaparHtml(ficha.intro) + '</p>' +
+        ficha.items.map(it =>
+            '<div class="ayuda-item"><b>' + escaparHtml(it[0]) + '</b>' +
+            '<span>' + escaparHtml(it[1]) + '</span></div>').join('');
+}
+
+function alternarAyuda(ev) {
+    if (ev) ev.stopPropagation();       // que el cierre por «clic fuera» no lo reabra
+    const pop = document.getElementById('ayudaPop');
+    if (!pop) return;
+    const abrir = pop.hidden;
+    if (abrir) renderAyuda();
+    pop.hidden = !abrir;
+    const bt = document.getElementById('btnAyuda');
+    if (bt) bt.setAttribute('aria-expanded', abrir ? 'true' : 'false');
+}
+
+function cerrarAyuda() {
+    const pop = document.getElementById('ayudaPop');
+    if (!pop || pop.hidden) return;
+    pop.hidden = true;
+    const bt = document.getElementById('btnAyuda');
+    if (bt) bt.setAttribute('aria-expanded', 'false');
+}
+
+/** Si el panel esta abierto y se cambia de vista, el texto se pone al dia. */
+function refrescarAyudaSiAbierta() {
+    const pop = document.getElementById('ayudaPop');
+    if (pop && !pop.hidden) renderAyuda();
+}
+
+document.addEventListener('click', function (ev) {
+    const pop = document.getElementById('ayudaPop');
+    if (pop && !pop.hidden && !pop.contains(ev.target)) cerrarAyuda();
+});
+document.addEventListener('keydown', function (ev) {
+    if (ev.key === 'Escape') cerrarAyuda();
+});
+
+// ============================================================
 // CAMPANA · variaciones frente a la revision anterior
 // ------------------------------------------------------------
 // No calcula nada nuevo: el backend ya compara cada anexo con SU
@@ -1112,11 +1261,14 @@ function switchTab(tab) {
         if (t === tab) btn.classList.add('active');
         else btn.classList.remove('active');
     });
+
+    refrescarAyudaSiAbierta();
 }
 
 function switchAnexoTab(target) {
     document.querySelectorAll('.tab-ana').forEach(b => b.classList.toggle('active', b.dataset.target === target));
     document.querySelectorAll('.panel-ana').forEach(p => p.classList.toggle('active', p.id === 'panel-' + target));
+    refrescarAyudaSiAbierta();
 }
 
 // ============================================================
