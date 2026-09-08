@@ -118,8 +118,16 @@ function construirTablero_() {
   const pctA4Hoja= leerCeldaPct_(libro, TABLERO.HOJAS.A4, TABLERO.CELDA_PCT_A4);
   const histor   = leerHoja_(libro, TABLERO.HOJAS.HISTORIAL);
 
+  // Las cabeceras de las tres hojas que traen el % de avance. Sirven para
+  // localizar esa columna por su nombre cuando no esta donde se espera.
+  const cabeceras = {
+    general: cabeceraHoja_(libro, TABLERO.HOJAS.GENERAL),
+    resA1:   cabeceraHoja_(libro, TABLERO.HOJAS.RESUMEN_A1),
+    resA3:   cabeceraHoja_(libro, TABLERO.HOJAS.RESUMEN_A3)
+  };
+
   const catalogo = leerCatalogo_(libro);
-  const porSigla = indexarPorSigla_(general, resA1, resA3, catalogo);
+  const porSigla = indexarPorSigla_(general, resA1, resA3, catalogo, cabeceras);
   const facultades = catalogo.map(function (f, i) {
     return facultadDe_(f[0], f[1] + '_' + f[0], f[2], i + 1, porSigla[f[0]] || {});
   });
@@ -175,6 +183,51 @@ function leerHojaTexto_(libro, nombre) {
   return hoja.getDataRange().getDisplayValues().slice(1);
 }
 
+/** La fila de titulos de una hoja, o [] si la hoja no esta. */
+function cabeceraHoja_(libro, nombre) {
+  const hoja = buscarHoja_(libro, nombre);
+  if (!hoja || hoja.getLastRow() < 1 || hoja.getLastColumn() < 1) return [];
+  return hoja.getRange(1, 1, 1, hoja.getLastColumn()).getDisplayValues()[0];
+}
+
+/**
+ * Primera columna cuyo titulo case con `prueba`, o -1.
+ *
+ * El titulo se compara sin tildes ni signos, porque en el libro conviven
+ * «% AVANCE», «%AVANCE» y «% de avance».
+ */
+function indicePorCabecera_(cabecera, prueba) {
+  for (let i = 0; i < (cabecera || []).length; i++) {
+    if (prueba(normalizarTitulo_(cabecera[i]))) return i;
+  }
+  return -1;
+}
+
+function normalizarTitulo_(s) {
+  return String(s === null || s === undefined ? '' : s)
+    .toUpperCase()
+    .replace(/[ÁÀÄÂ]/g, 'A').replace(/[ÉÈËÊ]/g, 'E').replace(/[ÍÌÏÎ]/g, 'I')
+    .replace(/[ÓÒÖÔ]/g, 'O').replace(/[ÚÙÜÛ]/g, 'U')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+/**
+ * El % de avance de una fila, buscandolo primero donde toca y, si ahi no hay
+ * nada, en la columna que lo diga en su cabecera.
+ *
+ * El respaldo por cabecera SOLO entra cuando la posicion fija no da un numero,
+ * de modo que no puede estropear una lectura que ya funcionaba: como mucho
+ * rescata una que devolvia null y acababa pintando la barra a cero.
+ */
+function pctDeFila_(fila, indiceFijo, cabecera, prueba) {
+  const directo = pct_(fila[indiceFijo]);
+  if (directo !== null) return directo;
+
+  const i = indicePorCabecera_(cabecera, prueba);
+  return i === -1 ? null : pct_(fila[i]);
+}
+
 function buscarHoja_(libro, nombre) {
   const exacta = libro.getSheetByName(nombre);
   if (exacta) return exacta;
@@ -191,7 +244,18 @@ function esqueleto_(s) {
   return String(s || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
 }
 
-function indexarPorSigla_(general, resA1, resA3, catalogo) {
+// Como reconocer, por su cabecera, la columna que trae cada porcentaje.
+// Se exige que hable de avance o porcentaje Y que nombre a su anexo, para no
+// confundir el avance del Anexo 1 con el del 3 en una hoja que traiga los dos.
+const CABECERA_PCT = {
+  avance:  function (t) { return /%|AVANCE|PORCENTAJE/.test(t); },
+  anexo1:  function (t) { return /(%|AVANCE|PORCENTAJE)/.test(t) && /ANEXO\s*1|\bA1\b/.test(t); },
+  anexo3:  function (t) { return /(%|AVANCE|PORCENTAJE)/.test(t) && /ANEXO\s*3|\bA3\b/.test(t); },
+  general: function (t) { return /(%|AVANCE|PORCENTAJE)/.test(t) && /GENERAL|TOTAL|GLOBAL/.test(t); }
+};
+
+function indexarPorSigla_(general, resA1, resA3, catalogo, cabeceras) {
+  const cab = cabeceras || {};
   const validas = {};
   catalogo.forEach(function (f) { validas[f[0]] = true; });
 
@@ -205,9 +269,9 @@ function indexarPorSigla_(general, resA1, resA3, catalogo) {
 
   general.forEach(function (f) {
     const c = cajon(f[0]); if (!c) return;
-    c.pctAnexo1  = pct_(f[2]);
-    c.pctAnexo3  = pct_(f[3]);
-    c.pctGeneral = pct_(f[4]);
+    c.pctAnexo1  = pctDeFila_(f, 2, cab.general, CABECERA_PCT.anexo1);
+    c.pctAnexo3  = pctDeFila_(f, 3, cab.general, CABECERA_PCT.anexo3);
+    c.pctGeneral = pctDeFila_(f, 4, cab.general, CABECERA_PCT.general);
     c.estado     = String(f[5] || '').trim();
     c.notas      = String(f[6] || '').trim();
   });
@@ -231,7 +295,9 @@ function indexarPorSigla_(general, resA1, resA3, catalogo) {
       observados:   num_(f[14]),
       sinRegistrar: num_(f[15])
     };
-    if (c.pctAnexo1 === null) c.pctAnexo1 = pct_(f[6]);
+    if (c.pctAnexo1 === null || c.pctAnexo1 === undefined) {
+      c.pctAnexo1 = pctDeFila_(f, 6, cab.resA1, CABECERA_PCT.avance);
+    }
   });
 
   resA3.forEach(function (f) {
@@ -243,7 +309,9 @@ function indexarPorSigla_(general, resA1, resA3, catalogo) {
       incompletas: num_(f[5]),
       sinProducto: num_(f[6])
     };
-    if (c.pctAnexo3 === null) c.pctAnexo3 = pct_(f[11]);
+    if (c.pctAnexo3 === null || c.pctAnexo3 === undefined) {
+      c.pctAnexo3 = pctDeFila_(f, 11, cab.resA3, CABECERA_PCT.avance);
+    }
   });
 
   return mapa;
@@ -944,11 +1012,12 @@ function diagnosticoAvance() {
 
   [
     { hoja: TABLERO.HOJAS.GENERAL,    rotulo: 'RESUMEN_GENERAL',
-      busca: [[2, 'pctAnexo1'], [3, 'pctAnexo3'], [4, 'pctGeneral']] },
+      busca: [[2, 'pctAnexo1', 'anexo1'], [3, 'pctAnexo3', 'anexo3'],
+              [4, 'pctGeneral', 'general']] },
     { hoja: TABLERO.HOJAS.RESUMEN_A1, rotulo: 'RESUMEN_EJECUTIVO_A1 (respaldo Anexo 1)',
-      busca: [[6, 'pctAnexo1']] },
+      busca: [[6, 'pctAnexo1', 'avance']] },
     { hoja: TABLERO.HOJAS.RESUMEN_A3, rotulo: 'RESUMEN_EJECUTIVO_A3 (respaldo Anexo 3)',
-      busca: [[11, 'pctAnexo3']] }
+      busca: [[11, 'pctAnexo3', 'avance']] }
   ].forEach(function (cfg) {
     const hoja = buscarHoja_(libro, cfg.hoja);
     lineas.push('── ' + cfg.rotulo);
@@ -975,11 +1044,26 @@ function diagnosticoAvance() {
       const i = par[0];
       const muestra = filas.length > 1 ? filas[1][i] : '';
       const leido = pct_(muestra);
-      lineas.push('      ' + par[1] + '  ←  columna [' + i + '] ' + columnaLetra_(i) +
+      lineas.push('      ' + par[1] + '  ←  columna fija [' + i + '] ' + columnaLetra_(i) +
                   '  «' + String(filas[0][i] || '').trim() + '»' +
                   '   →   ' + (leido === null
-                    ? '✗ NO da un porcentaje (por eso la barra queda en 0)'
+                    ? '✗ NO da un porcentaje'
                     : '✓ ' + leido + '%'));
+
+      // El respaldo por cabecera, que entra justo cuando la fija falla.
+      const prueba = CABECERA_PCT[par[2]];
+      const j = indicePorCabecera_(filas[0], prueba);
+      if (leido !== null) {
+        lineas.push('         (la posición fija ya sirve; el respaldo por cabecera no hace falta)');
+      } else if (j === -1) {
+        lineas.push('         respaldo por cabecera: ✗ ninguna columna se llama como un % de avance');
+        lineas.push('         →  AQUÍ HACE FALTA CORREGIR EL ÍNDICE A MANO');
+      } else {
+        const valorJ = filas.length > 1 ? filas[1][j] : '';
+        lineas.push('         respaldo por cabecera: columna [' + j + '] ' + columnaLetra_(j) +
+                    '  «' + String(filas[0][j] || '').trim() + '»   →   ' +
+                    (pct_(valorJ) === null ? '✗ tampoco da un número' : '✓ ' + pct_(valorJ) + '%'));
+      }
     });
     lineas.push('');
   });
