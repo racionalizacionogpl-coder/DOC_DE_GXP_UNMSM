@@ -180,6 +180,7 @@
         [data-theme="dark"] .notif-fila{ border-color:var(--raya); }
         [data-theme="dark"] .notif-rotulo{ color:var(--texto3); }
         [data-theme="dark"] .notif-rotulo b{ color:var(--text); }
+        [data-theme="dark"] .notif-fecha{ color:var(--tenue); }
         [data-theme="dark"] .ayuda-intro{ color:var(--texto2); }
         [data-theme="dark"] .ayuda-item{ border-left-color:#2f4468; }
         [data-theme="dark"] .ayuda-item span{ color:var(--texto3); }
@@ -379,7 +380,7 @@
            el punto de anclaje justo debajo del icono. */
         .notif-caja { position: relative; }
         .notif-punto { position: absolute; top: 9px; right: 11px; width: 8px; height: 8px; border-radius: 50%; background: #e11d48; border: 2px solid #fff; }
-        .notif-pop { position: absolute; top: calc(100% + 10px); right: 0; width: 310px; z-index: 60;
+        .notif-pop { position: absolute; top: calc(100% + 10px); right: 0; width: 330px; z-index: 60;
                      background: #fff; border: 1px solid var(--line); border-radius: 14px;
                      box-shadow: 0 18px 40px rgba(15,26,46,.18); overflow: hidden; }
         .notif-cab { padding: 13px 16px; border-bottom: 1px solid var(--line); background: linear-gradient(180deg,#f8fbff,#fff);
@@ -387,6 +388,12 @@
         .notif-cab span { display: block; margin-top: 2px; font-size: 10px; font-weight: 600; color: #8a9ab0; }
         .notif-fila { display: flex; align-items: center; justify-content: space-between; gap: 10px;
                       padding: 11px 16px; border-bottom: 1px solid #f1f5f9; }
+        /* La variacion y su fecha van apilados y alineados a la derecha. En un
+           panel de 320 px, tres columnas en linea dejarian la fecha partida en
+           dos renglones; asi la pastilla manda y la fecha la acompana. */
+        .notif-der { display: flex; flex-direction: column; align-items: flex-end; gap: 3px; }
+        .notif-fecha { font-size: 9.5px; font-style: italic; font-weight: 500; color: #9aa8ba;
+                       white-space: nowrap; font-variant-numeric: tabular-nums; }
         .notif-fila:last-child { border-bottom: none; }
         .notif-rotulo { font-size: 11px; font-weight: 700; color: #41566d; }
         .notif-rotulo b { display: block; font-size: 15px; font-weight: 900; color: #162742; font-variant-numeric: tabular-nums; }
@@ -1383,16 +1390,43 @@ function renderNotificaciones() {
             clase = 'igual'; texto = '— sin cambio';
         }
 
+        // Cuando se registro el cambio: la fecha de la lectura ACTUAL. Si esa
+        // falta, sirve la de la anterior, que al menos situa la comparacion.
+        const fecha = fechaDeRegistro((h && h.actual && h.actual.fecha) ||
+                                     (h && h.anterior && h.anterior.fecha) || null);
+
         return '<div class="notif-fila">' +
             '<span class="notif-rotulo">' + escaparHtml(m.rotulo) +
                 '<b>' + (valor === null ? '—' : numeroCorto(valor) + '%') + '</b></span>' +
-            '<span class="notif-delta ' + clase + '">' + texto + '</span>' +
+            '<span class="notif-der">' +
+                '<span class="notif-delta ' + clase + '">' + texto + '</span>' +
+                (fecha ? '<span class="notif-fecha">' + escaparHtml(fecha) + '</span>' : '') +
+            '</span>' +
         '</div>';
     }).join('');
 
     // El punto rojo solo aparece si de verdad hay algo que mirar.
     const punto = document.getElementById('notifPunto');
     if (punto) punto.hidden = conCambio === 0;
+}
+
+/**
+ * La fecha de un registro del historial, en dd/mm/aaaa.
+ *
+ * Llega en ISO desde el backend. Se devuelve null si no hay fecha o no se deja
+ * interpretar, para que la fila salga sin ella en vez de con un «Invalid Date».
+ *
+ * No se llama fechaCorta a proposito: ese nombre ya lo ocupa el formateador
+ * del eje de las tendencias, que da dd/mm sin ano y '' cuando la fecha no
+ * vale. Las declaraciones de funcion se izan y gana la ultima, asi que
+ * repetir el nombre le habria cambiado el eje a las graficas sin avisar.
+ */
+function fechaDeRegistro(iso) {
+    if (!iso) return null;
+    const d = new Date(iso);
+    if (isNaN(d.getTime())) return null;
+    return String(d.getDate()).padStart(2, '0') + '/' +
+           String(d.getMonth() + 1).padStart(2, '0') + '/' + d.getFullYear();
 }
 
 /** 68 → «68»; 68.25 → «68,3». Sin decimales cuando no aportan. */
