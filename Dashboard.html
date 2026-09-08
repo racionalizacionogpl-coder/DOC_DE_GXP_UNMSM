@@ -173,6 +173,28 @@
         .sheet-header { display: flex; justify-content: space-between; align-items: flex-end; gap: 16px; flex-wrap: wrap; margin-bottom: 16px; }
         .sheet-header h2 { margin: 0; font-size: 15px; font-weight: 800; color: #162742; letter-spacing: -0.01em; }
         .sheet-header p { margin: 4px 0 0 0; font-size: 11px; color: #71829a; font-weight: 600; }
+        /* Campana de variaciones. El popover va absoluto para no empujar la
+           cabecera al abrirse, y colgado de .notif-caja, que es lo que le da
+           el punto de anclaje justo debajo del icono. */
+        .notif-caja { position: relative; }
+        .notif-punto { position: absolute; top: 9px; right: 11px; width: 8px; height: 8px; border-radius: 50%; background: #e11d48; border: 2px solid #fff; }
+        .notif-pop { position: absolute; top: calc(100% + 10px); right: 0; width: 310px; z-index: 60;
+                     background: #fff; border: 1px solid var(--line); border-radius: 14px;
+                     box-shadow: 0 18px 40px rgba(15,26,46,.18); overflow: hidden; }
+        .notif-cab { padding: 13px 16px; border-bottom: 1px solid var(--line); background: linear-gradient(180deg,#f8fbff,#fff);
+                     font-size: 12px; font-weight: 800; color: #162742; }
+        .notif-cab span { display: block; margin-top: 2px; font-size: 10px; font-weight: 600; color: #8a9ab0; }
+        .notif-fila { display: flex; align-items: center; justify-content: space-between; gap: 10px;
+                      padding: 11px 16px; border-bottom: 1px solid #f1f5f9; }
+        .notif-fila:last-child { border-bottom: none; }
+        .notif-rotulo { font-size: 11px; font-weight: 700; color: #41566d; }
+        .notif-rotulo b { display: block; font-size: 15px; font-weight: 900; color: #162742; font-variant-numeric: tabular-nums; }
+        .notif-delta { font-size: 11px; font-weight: 800; padding: 3px 9px; border-radius: 20px; white-space: nowrap; font-variant-numeric: tabular-nums; }
+        .notif-delta.sube  { color: #047857; background: #dcfce7; }
+        .notif-delta.baja  { color: #b91c1c; background: #fee2e2; }
+        .notif-delta.igual { color: #64748b; background: #f1f5f9; }
+        .notif-vacio { padding: 18px 16px; font-size: 11px; color: #8a9ab0; font-weight: 600; text-align: center; }
+
         /* .db-btn se penso para <button>; en un enlace hay que quitarle el subrayado. */
         .sheet-header a.db-btn { text-decoration: none; white-space: nowrap; }
         /* Barra de hojas del libro: un boton por hoja, y el que esta activo
@@ -363,7 +385,21 @@
                     <button id="btn-tab-database" onclick="switchTab('database')" class="px-8 py-2.5 bg-white text-corp-textmuted rounded-full text-sm font-bold hover:text-corp-dark transition-all btn-depth">Base de datos</button>
                 </div>
                 <div class="hidden sm:flex gap-4">
-                    <button class="w-12 h-12 bg-white rounded-full flex items-center justify-center text-corp-textmuted hover:text-corp-dark transition btn-depth"><i class="fa-regular fa-bell text-lg"></i></button>
+                    <div class="notif-caja">
+                        <button id="btnCampana" type="button" onclick="alternarNotificaciones(event)"
+                                aria-haspopup="true" aria-expanded="false" title="Variaciones recientes"
+                                class="w-12 h-12 bg-white rounded-full flex items-center justify-center text-corp-textmuted hover:text-corp-dark transition btn-depth relative">
+                            <i class="fa-regular fa-bell text-lg"></i>
+                            <span class="notif-punto" id="notifPunto" hidden></span>
+                        </button>
+                        <div class="notif-pop" id="notifPop" hidden role="dialog" aria-label="Variaciones recientes">
+                            <div class="notif-cab">
+                                Variaciones recientes
+                                <span>Avance frente a la revision anterior</span>
+                            </div>
+                            <div id="notifLista"></div>
+                        </div>
+                    </div>
                     <button class="w-12 h-12 bg-corp-dark text-white rounded-full flex items-center justify-center btn-depth-primary"><i class="fa-solid fa-house text-lg"></i></button>
                 </div>
             </div>
@@ -846,6 +882,115 @@ function serieRevisiones(clave) {
     return (DATOS_FUENTE.revisiones || [])
         .map(r => (r[clave] === undefined || r[clave] === null) ? null : Number(r[clave]))
         .filter(v => v !== null);
+}
+
+// ============================================================
+// CAMPANA · variaciones frente a la revision anterior
+// ------------------------------------------------------------
+// No calcula nada nuevo: el backend ya compara cada anexo con SU
+// propia revision anterior de HISTORIAL_REVISIONES y manda la
+// diferencia hecha. Aqui solo se presenta.
+//
+// El detalle que se paga si se ignora: la tarjeta que en el HTML
+// se llama «general» el historial la guarda como «fase1», asi que
+// buscarla por «general» no la encuentra nunca. Es el mismo
+// tropiezo que ya estaba anotado en vincularVariaciones().
+// ============================================================
+const NOTIF_METRICAS = [
+    { rotulo: '% Avance Fase 1',  kpi: 'general', hist: 'fase1'  },
+    { rotulo: '% Avance Anexo 1', kpi: 'anexo1',  hist: 'anexo1' },
+    { rotulo: '% Avance Anexo 3', kpi: 'anexo3',  hist: 'anexo3' },
+    { rotulo: '% Avance Anexo 4', kpi: 'anexo4',  hist: 'anexo4' }
+];
+
+function alternarNotificaciones(ev) {
+    if (ev) ev.stopPropagation();          // que el cierre de «clic fuera» no lo reabra
+    const pop = document.getElementById('notifPop');
+    if (!pop) return;
+    const abrir = pop.hidden;
+    if (abrir) renderNotificaciones();
+    pop.hidden = !abrir;
+    const bt = document.getElementById('btnCampana');
+    if (bt) bt.setAttribute('aria-expanded', abrir ? 'true' : 'false');
+}
+
+function cerrarNotificaciones() {
+    const pop = document.getElementById('notifPop');
+    if (!pop || pop.hidden) return;
+    pop.hidden = true;
+    const bt = document.getElementById('btnCampana');
+    if (bt) bt.setAttribute('aria-expanded', 'false');
+}
+
+// Clic fuera y Escape. Van sobre document para no tener que enganchar y
+// desenganchar nada al abrir: el propio popover para el clic que cae dentro.
+document.addEventListener('click', function (ev) {
+    const pop = document.getElementById('notifPop');
+    if (pop && !pop.hidden && !pop.contains(ev.target)) cerrarNotificaciones();
+});
+document.addEventListener('keydown', function (ev) {
+    if (ev.key === 'Escape') cerrarNotificaciones();
+});
+
+/**
+ * La variacion de una metrica, o null si no hay con que compararla.
+ * Se prefiere la que ya viene calculada; el respaldo es restar los dos
+ * ultimos puntos de la serie.
+ */
+function variacionDe(clave) {
+    const h = (DATOS_FUENTE.historial || {})[clave];
+    if (!h) return null;
+    if (h.variacion !== null && h.variacion !== undefined) return h.variacion;
+    if (h.actual && h.anterior &&
+        typeof h.actual.valor === 'number' && typeof h.anterior.valor === 'number') {
+        return Math.round((h.actual.valor - h.anterior.valor) * 10) / 10;
+    }
+    return null;
+}
+
+function renderNotificaciones() {
+    const caja = document.getElementById('notifLista');
+    if (!caja) return;
+
+    const K = DATOS_FUENTE.kpi || {};
+    let conCambio = 0;
+
+    caja.innerHTML = NOTIF_METRICAS.map(m => {
+        const h = (DATOS_FUENTE.historial || {})[m.hist];
+        // El valor que se enseña es el mismo de las tarjetas, para que la
+        // campana no discuta con lo que hay detras de ella en pantalla.
+        const valor = (typeof K[m.kpi] === 'number')
+            ? K[m.kpi]
+            : (h && h.actual && typeof h.actual.valor === 'number' ? h.actual.valor : null);
+        const delta = variacionDe(m.hist);
+
+        let clase, texto;
+        if (delta === null) {
+            clase = 'igual'; texto = '— sin revisión anterior';
+        } else if (delta > 0) {
+            clase = 'sube';  texto = '▲ +' + numeroCorto(delta) + ' pp'; conCambio++;
+        } else if (delta < 0) {
+            clase = 'baja';  texto = '▼ ' + numeroCorto(delta) + ' pp';  conCambio++;
+        } else {
+            clase = 'igual'; texto = '— sin cambio';
+        }
+
+        return '<div class="notif-fila">' +
+            '<span class="notif-rotulo">' + escaparHtml(m.rotulo) +
+                '<b>' + (valor === null ? '—' : numeroCorto(valor) + '%') + '</b></span>' +
+            '<span class="notif-delta ' + clase + '">' + texto + '</span>' +
+        '</div>';
+    }).join('');
+
+    // El punto rojo solo aparece si de verdad hay algo que mirar.
+    const punto = document.getElementById('notifPunto');
+    if (punto) punto.hidden = conCambio === 0;
+}
+
+/** 68 → «68»; 68.25 → «68,3». Sin decimales cuando no aportan. */
+function numeroCorto(n) {
+    const r = Math.round(n * 10) / 10;
+    return (Number.isInteger(r) ? String(r) : r.toFixed(1)).replace('.', ',');
 }
 
 function vincularVariaciones() {
@@ -2160,6 +2305,7 @@ function pintarTodo() {
      ['rankings de facultades', pintarRankings],
      ['filtros Anexo 1',       populateAnexo1Filters],
      ['filtros Anexo 3',       populateAnexo3Filters],
+     ['campana de variaciones', renderNotificaciones],
      ['pestanas del libro',    pintarPestanasDelLibro],
      ['tabla Anexo 1',         renderAnexo1Table],
      ['tabla Anexo 3',         renderAnexo3Table]
