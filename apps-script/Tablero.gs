@@ -71,6 +71,85 @@ const TABLERO = {
   ]
 };
 
+/* ══════════════════════ CACHÉ DEL DETALLE ══════════════════════
+ *
+ * El problema que resuelve: el detalle no cabe en una sola respuesta, así que
+ * la web lo pide por tandas. Pero construir el tablero significa releer el
+ * libro entero (varios segundos), y sin caché CADA tanda lo repetía: siete
+ * tandas eran siete reconstrucciones y más de treinta segundos de espera.
+ *
+ * La caché de Apps Script admite 100 KB por clave, y el detalle son 6 MB. Se
+ * guarda por tandas y cada tanda partida en trozos de 90 KB, con un
+ * manifiesto que dice cuántos trozos tiene cada una. Así la primera petición
+ * construye y guarda, y las demás se sirven sin volver a tocar el libro.
+ *
+ * Todo esto es opcional: si cualquier paso de la caché falla, se sigue por el
+ * camino de siempre (reconstruir y cortar). Nunca devuelve datos a medias.
+ */
+const DET_TTL    = 900;      // 15 min de vida
+const DET_TROZO  = 90000;    // < 100 KB por clave
+const DET_MAN    = 'det_man_v1';
+
+function detClavesDeTanda_(pagina, trozos) {
+  const claves = [];
+  for (let j = 0; j < trozos; j++) claves.push('det_v1_p' + pagina + '_' + j);
+  return claves;
+}
+
+/** Parte el detalle en tandas y trozos, y lo deja en la caché. */
+function detGuardarEnCache_(filas, tam, generado) {
+  const cache = CacheService.getScriptCache();
+  const manifiesto = { total: filas.length, tam: tam, generado: generado, tandas: [] };
+  const porGuardar = {};
+
+  for (let i = 0, pagina = 0; i < filas.length; i += tam, pagina++) {
+    const texto = JSON.stringify(filas.slice(i, i + tam));
+    let trozos = 0;
+    for (let o = 0; o < texto.length; o += DET_TROZO, trozos++) {
+      porGuardar['det_v1_p' + pagina + '_' + trozos] = texto.substring(o, o + DET_TROZO);
+    }
+    manifiesto.tandas.push(trozos);
+  }
+  porGuardar[DET_MAN] = JSON.stringify(manifiesto);
+
+  // putAll de a lotes: son decenas de claves y conviene no pasarse.
+  const claves = Object.keys(porGuardar);
+  for (let k = 0; k < claves.length; k += 100) {
+    const lote = {};
+    claves.slice(k, k + 100).forEach(function (c) { lote[c] = porGuardar[c]; });
+    cache.putAll(lote, DET_TTL);
+  }
+  return manifiesto;
+}
+
+/**
+ * Devuelve una tanda desde la caché, o null si no está completa.
+ *
+ * Si falta un solo trozo —porque caducó antes que los demás— devuelve null
+ * en vez de una tanda incompleta: más vale reconstruir que servir un pedazo.
+ */
+function detLeerDeCache_(pagina, tam) {
+  const cache = CacheService.getScriptCache();
+  const crudo = cache.get(DET_MAN);
+  if (!crudo) return null;
+
+  const man = JSON.parse(crudo);
+  if (man.tam !== tam) return null;                    // otra medida de tanda
+  if (pagina >= man.tandas.length) {
+    return { filas: [], total: man.total, generado: man.generado };
+  }
+
+  const claves = detClavesDeTanda_(pagina, man.tandas[pagina]);
+  const trozos = cache.getAll(claves);
+  let texto = '';
+  for (let j = 0; j < claves.length; j++) {
+    const t = trozos[claves[j]];
+    if (t == null) return null;
+    texto += t;
+  }
+  return { filas: JSON.parse(texto), total: man.total, generado: man.generado };
+}
+
 /* ══════════════════════ ACCIÓN PÚBLICA ══════════════════════ */
 
 function tablero(opciones) {
@@ -107,6 +186,28 @@ function tablero(opciones) {
     }
   }
 
+  // Una tanda ya guardada se sirve sin reconstruir nada. Es lo que evita que
+  // pedir el detalle en siete tandas cueste siete lecturas del libro.
+  if (paginado && !sinCache) {
+    try {
+      const guardada = detLeerDeCache_(Math.floor(desde / limite), limite);
+      if (guardada) {
+        return {
+          ok: true,
+          generado: guardada.generado,
+          registros: guardada.filas,
+          totalRegistros: guardada.total,
+          desde: desde,
+          hayMas: (desde + limite) < guardada.total,
+          paginado: true,
+          deCache: true
+        };
+      }
+    } catch (e) {
+      // Caché inservible: se sigue por el camino de siempre.
+    }
+  }
+
   const datos = construirTablero_();
 
   if (!conDetalle) {
@@ -116,6 +217,15 @@ function tablero(opciones) {
 
   if (paginado) {
     const todas = datos.registros || [];
+
+    // Se guardan TODAS las tandas de una vez, no solo la pedida: la siguiente
+    // peticion ya la encuentra hecha.
+    try {
+      detGuardarEnCache_(todas, limite, datos.generado);
+    } catch (e) {
+      // Si no se pudo guardar, igual se responde; solo sera mas lento.
+    }
+
     datos.totalRegistros = todas.length;
     datos.desde = desde;
     datos.registros = todas.slice(desde, desde + limite);
