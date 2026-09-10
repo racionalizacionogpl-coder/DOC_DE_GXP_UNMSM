@@ -5,34 +5,14 @@
      oficial, se oculta todo al instante (antes de que se pinte nada) y se
      redirige al sitio real. display:none se aplica de forma sincronica
      mientras el HTML se sigue analizando, asi que nada llega a mostrarse. -->
-<script>
-(function(){
-  var permitidos = ['racionalizacionogpl-coder.github.io', 'localhost', '127.0.0.1'];
-  if (permitidos.indexOf(location.hostname) === -1) {
-    try { document.documentElement.style.display = 'none'; } catch(e){}
-    location.replace('https://racionalizacionogpl-coder.github.io/DOC_DE_GXP_UNMSM/');
-  }
-})();
-</script>
+<script>!function(){if(-1===["racionalizacionogpl-coder.github.io","localhost","127.0.0.1"].indexOf(location.hostname)){try{document.documentElement.style.display="none"}catch(o){}location.replace("https://racionalizacionogpl-coder.github.io/DOC_DE_GXP_UNMSM/")}}();</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Área interna · Diagnóstico documental UNMSM</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&family=Source+Sans+3:ital,wght@0,300;0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
-<script>
-/* El tema se fija antes de pintar. La clave es la misma que usa Dashboard.html
-   y ambos viven en el mismo origen, asi que la eleccion se comparte. */
-(function(){
-  try{
-    var t=localStorage.getItem('gxp.tema');
-    if(t!=='dark'&&t!=='light'){
-      t=(window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light';
-    }
-    document.documentElement.setAttribute('data-theme',t);
-  }catch(e){ document.documentElement.setAttribute('data-theme','light'); }
-})();
-</script>
+<script>!function(){try{var t=localStorage.getItem("gxp.tema");"dark"!==t&&"light"!==t&&(t=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"),document.documentElement.setAttribute("data-theme",t)}catch(t){document.documentElement.setAttribute("data-theme","light")}}();</script>
 <style>
 :root{
   --tinta:#14202E;
@@ -422,17 +402,7 @@ h3.bloque .idx{font-family:var(--mono);font-size:12px;color:var(--granate);font-
   <iframe class="dash-marco" id="marco-dashboard" src="Dashboard.html"
           title="Dashboard de avance por Facultad" loading="lazy"></iframe>
 </section>
-<script>
-/* El tablero avisa de su altura al quedar incrustado; así el marco crece con
-   el contenido en lugar de abrir una segunda barra de desplazamiento. Si el
-   mensaje no llega, el iframe se queda con su altura fija y todo sigue
-   funcionando. */
-window.addEventListener('message', function (e) {
-  if (!e.data || e.data.tipo !== 'dashboard-ogpl:altura') return;
-  const marco = document.getElementById('marco-dashboard');
-  if (marco) marco.style.height = e.data.altura + 'px';
-});
-</script>
+<script>window.addEventListener("message",function(a){if(!a.data||"dashboard-ogpl:altura"!==a.data.tipo)return;const t=document.getElementById("marco-dashboard");t&&(t.style.height=a.data.altura+"px")});</script>
 
 <!-- ============ DIAGNÓSTICO ============ -->
 <section class="panel" id="diagnostico"></section>
@@ -471,295 +441,16 @@ window.addEventListener('message', function (e) {
 <!-- Endpoint de la Web App de Apps Script que registra las decisiones en los
      documentos de Drive. Si se deja vacío, la interfaz sigue funcionando pero
      las decisiones sólo se guardan en el navegador. Ver apps-script/README.md. -->
-<script>window.GXP_ENDPOINT = 'https://script.google.com/macros/s/AKfycby2lzE32tbzib33Al9RMTplGxwjwMMNSjkPgt2opjFnt8VlJxP70M_663-tnpW-hYPg/exec';</script>
+<script>window.GXP_ENDPOINT="https://script.google.com/macros/s/AKfycby2lzE32tbzib33Al9RMTplGxwjwMMNSjkPgt2opjFnt8VlJxP70M_663-tnpW-hYPg/exec";</script>
 <script src="assets/recomendaciones.js?v=6"></script>
 <script src="assets/localizaciones.js?v=6"></script>
 <script src="assets/visor.js?v=6"></script>
 <script src="assets/decisiones.js?v=6"></script>
 <script src="assets/contradicciones.js?v=6"></script>
 
-<script>
-/* ============ NAVEGACIÓN ============ */
-document.querySelectorAll('.navin button').forEach(b=>{
-  b.addEventListener('click',()=>{
-    document.querySelectorAll('.navin button').forEach(x=>x.setAttribute('aria-selected','false'));
-    b.setAttribute('aria-selected','true');
-    document.querySelectorAll('.panel').forEach(p=>p.classList.remove('on'));
-    document.getElementById(b.dataset.p).classList.add('on');
-    window.scrollTo({top:0,behavior:'smooth'});
-  });
-});
-
-/* ============ HALLAZGOS ============ */
-let HALL=[];   // llega del backend tras el acceso
-
-// Número correlativo de hallazgo: H1, H2, … según el orden de la lista.
-window.HALL=HALL;
-
-// Se resuelve al pintar: al cargar la página el panel aún está vacío.
-const cont=()=>document.getElementById('listaHall');
-let fSev='todos',fDoc=null,fQ='',verResueltos=false;
-function pintarHall(){
-  const r=HALL.filter(x=>{
-    if(!verResueltos&&window.GXP_DEC&&window.GXP_DEC.resuelto(x))return false;
-    if(fSev!=='todos'&&x.s!==fSev)return false;
-    if(fDoc&&!x.d.includes(fDoc))return false;
-    if(fQ){const t=(x.h+x.ev+x.im+x.co+x.c).toLowerCase();if(!t.includes(fQ))return false}
-    return true;
-  });
-  document.getElementById('vacioHall').style.display=r.length?'none':'block';
-  // Se recuerda qué hallazgos estaban desplegados: aceptar una recomendación
-  // repinta la lista y, sin esto, el hallazgo se cerraría en las manos del usuario.
-  const abiertos=new Set([...cont().querySelectorAll('details.hall[open]')]
-    .map(d=>d.querySelector('.cod').textContent));
-  const desplaz=window.scrollY;
-  cont().innerHTML=r.map(x=>`
-  <details class="hall sev-${x.s}">
-    <summary>
-      <span class="cod">${x.c}</span>
-      <span class="cuerpo">
-        <span class="h">${x.h}</span>
-        <span class="meta"><span class="tag sv-${x.s}">${x.s}</span>${x.d.map(d=>`<span class="tag doc">${d}</span>`).join('')}</span>
-      </span>
-    </summary>
-    <dl class="det">
-      <dt>Hallazgo</dt><dd class="ev">${x.ev}</dd>
-      ${window.GXP_VISOR ? window.GXP_VISOR.bloqueLoc(x.c) : ''}
-      <dt>Por qué importa</dt><dd>${x.im}</dd>
-      <dt>Corrección en una línea</dt><dd>${x.co}</dd>
-      ${window.GXP_DEC ? window.GXP_DEC.bloque(x) : ''}
-    </dl>
-  </details>`).join('');
-  cont().querySelectorAll('details.hall').forEach(d=>{
-    if(abiertos.has(d.querySelector('.cod').textContent)) d.open=true;
-  });
-  if(desplaz) window.scrollTo({top:desplaz});
-  if (window.GXP_DEC) window.GXP_DEC.enlazar(cont());
-
-  const n = window.GXP_DEC ? window.GXP_DEC.cuentaResueltos(HALL) : 0;
-  const chip = document.getElementById('chipResueltos');
-  chip.hidden = n === 0;
-  chip.textContent = verResueltos ? `Ocultar resueltos (${n})` : `Ver resueltos (${n})`;
-  chip.setAttribute('aria-pressed', verResueltos ? 'true' : 'false');
-}
-document.getElementById('chipResueltos') && 0;
-/* Los controles viven dentro de paneles que llegan del backend, así que los
-   eventos se delegan en el documento: funcionan aparezcan cuando aparezcan. */
-document.addEventListener('click',ev=>{
-  const b=ev.target.closest('#chipResueltos'); if(!b) return;
-  (()=>{
-  verResueltos=!verResueltos; pintarHall();
-  })();
-});
-document.addEventListener('click',ev=>{
-  const b=ev.target.closest('.chip.fs');
-  if(b){document.querySelectorAll('.chip.fs').forEach(x=>x.setAttribute('aria-pressed','false'));
-    b.setAttribute('aria-pressed','true');fSev=b.dataset.f;pintarHall();return}
-  const d=ev.target.closest('.chip.fd');
-  if(d){const act=d.getAttribute('aria-pressed')==='true';
-    document.querySelectorAll('.chip.fd').forEach(x=>x.setAttribute('aria-pressed','false'));
-    if(!act){d.setAttribute('aria-pressed','true');fDoc=d.dataset.d}else{fDoc=null}
-    pintarHall()}
-});
-document.addEventListener('input',e=>{
-  if(e.target.id==='qh'){fQ=e.target.value.toLowerCase().trim();pintarHall()}
-  if(e.target.id==='qf'){fQF=e.target.value.toLowerCase().trim();pintarFac()}
-});
-/* ============ MATRIZ ============ */
-let MTZ=[];    // llega del backend tras el acceso
-window.MTZ=MTZ;
-
-function pintarMtz(){
-document.getElementById('mtzBody').innerHTML=MTZ.map(r=>`
-<tr><td class="asunto">${r.a}<small>${r.k}</small></td>
-${r.v.map((v,ci)=>`<td class="d">${v.t==='—'?'<span class="vacio">no lo declara</span>':`<span class="val ${v.c}">${v.t}</span>`}${window.GXP_VISOR?window.GXP_VISOR.botonMtz(r.a,ci):''}</td>`).join('')}</tr>`).join('');
-}
-
-document.addEventListener('gxp:decision',()=>pintarHall());
-
-/* ============ CRONOGRAMA ============ */
-let CR=[];
-let fEst='todos',soloP=false;
-const PILL={'Culminado':'p-ok','En Proceso':'p-proc','Pendiente':'p-pend'};
-function pintarEdt(){
-  const d=CR.filter(r=>(fEst==='todos'||r[7]===fEst)&&(!soloP||r[8]));
-  const fases=[...new Set(d.map(r=>r[0]))];
-  document.getElementById('edtCont').innerHTML=fases.map((f,i)=>{
-    const rf=d.filter(r=>r[0]===f);
-    const etapas=[...new Set(rf.map(r=>r[1]))];
-    return `<details class="fase" ${i===0?'open':''}>
-      <summary><span class="fn">${f}</span><span class="fc">${rf.length} tarea${rf.length!==1?'s':''}</span></summary>
-      ${etapas.map(e=>{
-        const re=rf.filter(r=>r[1]===e);
-        const acts=[...new Set(re.map(r=>r[2]))];
-        return `<details class="etapa" open><summary>${e}</summary><div class="act">
-          ${acts.map(a=>{
-            const ra=re.filter(r=>r[2]===a);
-            return `<div class="an">${a}</div>${ra.map(r=>`
-              <div class="tarea">
-                <span class="tf">${r[4]} → ${r[5]} · ${r[6]}d</span>
-                <span class="tt">${r[3].replace(/^Tarea [\d.]+:\s*/,'')} ${r[8]?`<span class="alerta" title="${r[8].replace(/"/g,'&quot;')}">◆</span>`:''}</span>
-                <span class="ts"><span class="pill ${PILL[r[7]]}">${r[7]}</span></span>
-              </div>`).join('')}`;
-          }).join('')}
-        </div></details>`;
-      }).join('')}
-    </details>`;
-  }).join('') || '<div style="padding:26px">Ninguna tarea coincide con ese filtro.</div>';
-}
-/* Controles del cronograma y del avance por facultad · eventos delegados */
-document.addEventListener('click', ev => {
-  const fe = ev.target.closest('.chip.fe');
-  if (fe) {
-    document.querySelectorAll('.chip.fe').forEach(x => x.setAttribute('aria-pressed','false'));
-    fe.setAttribute('aria-pressed','true'); fEst = fe.dataset.e; pintarEdt(); return;
-  }
-  const sp = ev.target.closest('#soloProb');
-  if (sp) {
-    soloP = sp.getAttribute('aria-pressed') !== 'true';
-    sp.setAttribute('aria-pressed', soloP ? 'true' : 'false'); pintarEdt(); return;
-  }
-  const fc = ev.target.closest('.chip.fc');
-  if (fc) {
-    document.querySelectorAll('.chip.fc').forEach(x => x.setAttribute('aria-pressed','false'));
-    fc.setAttribute('aria-pressed','true'); fCat = fc.dataset.c; pintarFac(); return;
-  }
-  const th = ev.target.closest('[data-s]');
-  if (th) {
-    const c = th.dataset.s;
-    ordD = (c === ordC) ? -ordD : (c === 'sigla' || c === 'form' ? 1 : -1);
-    ordC = c; pintarFac();
-  }
-});
-
-/* ============ FACULTADES ============ */
-let FAC=[];
-let fCat='todas',fQF='',ordC='av',ordD=1;
-function colorAv(v){return v>=80?'var(--verde)':v>=50?'var(--ocre)':'var(--rojo)'}
-function pintarFac(){
-  let d=FAC.filter(f=>{
-    if(fCat==='critica'&&f.av>=50)return false;
-    if(fCat==='faltan'&&f.falt===0)return false;
-    if(fCat==='incoherente'&&!f.inc)return false;
-    if(fQF&&!(f.sigla+' '+f.nom).toLowerCase().includes(fQF))return false;
-    return true;
-  }).sort((a,b)=>{
-    const x=a[ordC],y=b[ordC];
-    return (typeof x==='string'?x.localeCompare(y):x-y)*ordD;
-  });
-  document.getElementById('tbFac').innerHTML=d.map(f=>`<tr>
-    <td><strong>${f.sigla}</strong><div style="font-size:12px;color:var(--acero)">${f.nom}</div></td>
-    <td class="mono">${f.form}</td>
-    <td class="num">${f.total}</td>
-    <td class="num" style="color:var(--verde)">${f.comp}</td>
-    <td class="num" style="color:var(--ocre)">${f.parc}</td>
-    <td class="num">${f.pend}</td>
-    <td><div class="barra"><i style="width:${f.av}%;background:${colorAv(f.av)}"></i><span>${f.av}%</span></div></td>
-    <td class="num">${f.falt>0?`<strong style="color:var(--rojo)">${f.falt}</strong>`:'—'}</td>
-    <td style="font-size:12.5px;color:var(--tinta-70);max-width:330px">${f.obs}</td>
-  </tr>`).join('')||'<tr><td colspan="9" style="padding:22px">Ninguna facultad coincide con ese filtro.</td></tr>';
-}
-
-/* ============ PMBOK ============ */
-let AREAS=[];
-function pintarAreas(){
-document.getElementById('areasCont').innerHTML=AREAS.map(a=>`
-<div class="area c-${a.c}">
-  <div class="an">PMBOK · CAP. ${a.n}</div>
-  <h4>${a.t}</h4>
-  <div class="st">${a.s}</div>
-  <p>${a.p}</p>
-  <span class="fte">Fuente: ${a.f}</span>
-</div>`).join('');
-}
-
-/* ============ CATÁLOGO DE PROCESOS ============ */
-let PROC=[];
-function pintarProc(){
-document.getElementById('tbProc').innerHTML=PROC.map(p=>`<tr${p[2]?' style="background:var(--ocre-cl)"':''}>
-  <td class="mono"><strong>${p[0]}</strong></td><td>${p[1]}</td>
-  <td style="font-size:12.5px;color:${p[2]?'var(--rojo)':'var(--acero)'}">${p[2]||'—'}</td></tr>`).join('');
-}
-
-/* Los datos internos llegan del backend: hasta entonces no hay nada que pintar. */
-window.GXP_ARRANCAR = function (p) {
-  // Los paneles llegan del backend: hasta aquí el documento sólo tiene su
-  // esqueleto. Se inyectan antes de enlazar los controles que contienen.
-  const pan = p.PANELES || {};
-  Object.keys(pan).forEach(function (id) {
-    if (id === '__tira__') { document.getElementById('tira').outerHTML = pan[id]; return; }
-    const sec = document.getElementById(id);
-    if (sec) sec.innerHTML = pan[id];
-  });
-
-  HALL = p.HALL || [];  HALL.forEach((x,i)=>{x.n=i+1});  window.HALL = HALL;
-  MTZ  = p.MTZ  || [];  window.MTZ = MTZ;
-  window.GXP_DOCS      = p.DOCS;
-  window.GXP_LOC       = p.LOC;
-  window.GXP_LOC_MTZ   = p.LOC_MTZ;
-  window.GXP_RECS      = p.RECS;
-  window.GXP_MTZ_ITEMS = p.MTZ_ITEMS;
-  CR = p.CR || [];  FAC = p.FAC || [];  AREAS = p.AREAS || [];  PROC = p.PROC || [];
-  pintarHall();
-  pintarMtz();
-  pintarEdt();
-  pintarFac();
-  pintarAreas();
-  pintarProc();
-  if (window.GXP_MTZC) window.GXP_MTZC.pintar();
-};
-
-</script>
+<script>document.querySelectorAll(".navin button").forEach(t=>{t.addEventListener("click",()=>{document.querySelectorAll(".navin button").forEach(t=>t.setAttribute("aria-selected","false")),t.setAttribute("aria-selected","true"),document.querySelectorAll(".panel").forEach(t=>t.classList.remove("on")),document.getElementById(t.dataset.p).classList.add("on"),window.scrollTo({top:0,behavior:"smooth"})})});let HALL=[];window.HALL=HALL;const cont=()=>document.getElementById("listaHall");let fSev="todos",fDoc=null,fQ="",verResueltos=!1;function pintarHall(){const t=HALL.filter(t=>!(!verResueltos&&window.GXP_DEC&&window.GXP_DEC.resuelto(t))&&(("todos"===fSev||t.s===fSev)&&(!(fDoc&&!t.d.includes(fDoc))&&!(fQ&&!(t.h+t.ev+t.im+t.co+t.c).toLowerCase().includes(fQ)))));document.getElementById("vacioHall").style.display=t.length?"none":"block";const e=new Set([...cont().querySelectorAll("details.hall[open]")].map(t=>t.querySelector(".cod").textContent)),n=window.scrollY;cont().innerHTML=t.map(t=>`\n  <details class="hall sev-${t.s}">\n    <summary>\n      <span class="cod">${t.c}</span>\n      <span class="cuerpo">\n        <span class="h">${t.h}</span>\n        <span class="meta"><span class="tag sv-${t.s}">${t.s}</span>${t.d.map(t=>`<span class="tag doc">${t}</span>`).join("")}</span>\n      </span>\n    </summary>\n    <dl class="det">\n      <dt>Hallazgo</dt><dd class="ev">${t.ev}</dd>\n      ${window.GXP_VISOR?window.GXP_VISOR.bloqueLoc(t.c):""}\n      <dt>Por qué importa</dt><dd>${t.im}</dd>\n      <dt>Corrección en una línea</dt><dd>${t.co}</dd>\n      ${window.GXP_DEC?window.GXP_DEC.bloque(t):""}\n    </dl>\n  </details>`).join(""),cont().querySelectorAll("details.hall").forEach(t=>{e.has(t.querySelector(".cod").textContent)&&(t.open=!0)}),n&&window.scrollTo({top:n}),window.GXP_DEC&&window.GXP_DEC.enlazar(cont());const a=window.GXP_DEC?window.GXP_DEC.cuentaResueltos(HALL):0,s=document.getElementById("chipResueltos");s.hidden=0===a,s.textContent=verResueltos?`Ocultar resueltos (${a})`:`Ver resueltos (${a})`,s.setAttribute("aria-pressed",verResueltos?"true":"false")}document.getElementById("chipResueltos"),document.addEventListener("click",t=>{t.target.closest("#chipResueltos")&&(verResueltos=!verResueltos,pintarHall())}),document.addEventListener("click",t=>{const e=t.target.closest(".chip.fs");if(e)return document.querySelectorAll(".chip.fs").forEach(t=>t.setAttribute("aria-pressed","false")),e.setAttribute("aria-pressed","true"),fSev=e.dataset.f,void pintarHall();const n=t.target.closest(".chip.fd");if(n){const t="true"===n.getAttribute("aria-pressed");document.querySelectorAll(".chip.fd").forEach(t=>t.setAttribute("aria-pressed","false")),t?fDoc=null:(n.setAttribute("aria-pressed","true"),fDoc=n.dataset.d),pintarHall()}}),document.addEventListener("input",t=>{"qh"===t.target.id&&(fQ=t.target.value.toLowerCase().trim(),pintarHall()),"qf"===t.target.id&&(fQF=t.target.value.toLowerCase().trim(),pintarFac())});let MTZ=[];function pintarMtz(){document.getElementById("mtzBody").innerHTML=MTZ.map(t=>`\n<tr><td class="asunto">${t.a}<small>${t.k}</small></td>\n${t.v.map((e,n)=>`<td class="d">${"—"===e.t?'<span class="vacio">no lo declara</span>':`<span class="val ${e.c}">${e.t}</span>`}${window.GXP_VISOR?window.GXP_VISOR.botonMtz(t.a,n):""}</td>`).join("")}</tr>`).join("")}window.MTZ=MTZ,document.addEventListener("gxp:decision",()=>pintarHall());let CR=[],fEst="todos",soloP=!1;const PILL={Culminado:"p-ok","En Proceso":"p-proc",Pendiente:"p-pend"};function pintarEdt(){const t=CR.filter(t=>("todos"===fEst||t[7]===fEst)&&(!soloP||t[8])),e=[...new Set(t.map(t=>t[0]))];document.getElementById("edtCont").innerHTML=e.map((e,n)=>{const a=t.filter(t=>t[0]===e),s=[...new Set(a.map(t=>t[1]))];return`<details class="fase" ${0===n?"open":""}>\n      <summary><span class="fn">${e}</span><span class="fc">${a.length} tarea${1!==a.length?"s":""}</span></summary>\n      ${s.map(t=>{const e=a.filter(e=>e[1]===t),n=[...new Set(e.map(t=>t[2]))];return`<details class="etapa" open><summary>${t}</summary><div class="act">\n          ${n.map(t=>{const n=e.filter(e=>e[2]===t);return`<div class="an">${t}</div>${n.map(t=>`\n              <div class="tarea">\n                <span class="tf">${t[4]} → ${t[5]} · ${t[6]}d</span>\n                <span class="tt">${t[3].replace(/^Tarea [\d.]+:\s*/,"")} ${t[8]?`<span class="alerta" title="${t[8].replace(/"/g,"&quot;")}">◆</span>`:""}</span>\n                <span class="ts"><span class="pill ${PILL[t[7]]}">${t[7]}</span></span>\n              </div>`).join("")}`}).join("")}\n        </div></details>`}).join("")}\n    </details>`}).join("")||'<div style="padding:26px">Ninguna tarea coincide con ese filtro.</div>'}document.addEventListener("click",t=>{const e=t.target.closest(".chip.fe");if(e)return document.querySelectorAll(".chip.fe").forEach(t=>t.setAttribute("aria-pressed","false")),e.setAttribute("aria-pressed","true"),fEst=e.dataset.e,void pintarEdt();const n=t.target.closest("#soloProb");if(n)return soloP="true"!==n.getAttribute("aria-pressed"),n.setAttribute("aria-pressed",soloP?"true":"false"),void pintarEdt();const a=t.target.closest(".chip.fc");if(a)return document.querySelectorAll(".chip.fc").forEach(t=>t.setAttribute("aria-pressed","false")),a.setAttribute("aria-pressed","true"),fCat=a.dataset.c,void pintarFac();const s=t.target.closest("[data-s]");if(s){const t=s.dataset.s;ordD=t===ordC?-ordD:"sigla"===t||"form"===t?1:-1,ordC=t,pintarFac()}});let FAC=[],fCat="todas",fQF="",ordC="av",ordD=1;function colorAv(t){return t>=80?"var(--verde)":t>=50?"var(--ocre)":"var(--rojo)"}function pintarFac(){let t=FAC.filter(t=>!("critica"===fCat&&t.av>=50||"faltan"===fCat&&0===t.falt||"incoherente"===fCat&&!t.inc||fQF&&!(t.sigla+" "+t.nom).toLowerCase().includes(fQF))).sort((t,e)=>{const n=t[ordC],a=e[ordC];return("string"==typeof n?n.localeCompare(a):n-a)*ordD});document.getElementById("tbFac").innerHTML=t.map(t=>`<tr>\n    <td><strong>${t.sigla}</strong><div style="font-size:12px;color:var(--acero)">${t.nom}</div></td>\n    <td class="mono">${t.form}</td>\n    <td class="num">${t.total}</td>\n    <td class="num" style="color:var(--verde)">${t.comp}</td>\n    <td class="num" style="color:var(--ocre)">${t.parc}</td>\n    <td class="num">${t.pend}</td>\n    <td><div class="barra"><i style="width:${t.av}%;background:${colorAv(t.av)}"></i><span>${t.av}%</span></div></td>\n    <td class="num">${t.falt>0?`<strong style="color:var(--rojo)">${t.falt}</strong>`:"—"}</td>\n    <td style="font-size:12.5px;color:var(--tinta-70);max-width:330px">${t.obs}</td>\n  </tr>`).join("")||'<tr><td colspan="9" style="padding:22px">Ninguna facultad coincide con ese filtro.</td></tr>'}let AREAS=[];function pintarAreas(){document.getElementById("areasCont").innerHTML=AREAS.map(t=>`\n<div class="area c-${t.c}">\n  <div class="an">PMBOK · CAP. ${t.n}</div>\n  <h4>${t.t}</h4>\n  <div class="st">${t.s}</div>\n  <p>${t.p}</p>\n  <span class="fte">Fuente: ${t.f}</span>\n</div>`).join("")}let PROC=[];function pintarProc(){document.getElementById("tbProc").innerHTML=PROC.map(t=>`<tr${t[2]?' style="background:var(--ocre-cl)"':""}>\n  <td class="mono"><strong>${t[0]}</strong></td><td>${t[1]}</td>\n  <td style="font-size:12.5px;color:${t[2]?"var(--rojo)":"var(--acero)"}">${t[2]||"—"}</td></tr>`).join("")}window.GXP_ARRANCAR=function(t){const e=t.PANELES||{};Object.keys(e).forEach(function(t){if("__tira__"===t)return void(document.getElementById("tira").outerHTML=e[t]);const n=document.getElementById(t);n&&(n.innerHTML=e[t])}),HALL=t.HALL||[],HALL.forEach((t,e)=>{t.n=e+1}),window.HALL=HALL,MTZ=t.MTZ||[],window.MTZ=MTZ,window.GXP_DOCS=t.DOCS,window.GXP_LOC=t.LOC,window.GXP_LOC_MTZ=t.LOC_MTZ,window.GXP_RECS=t.RECS,window.GXP_MTZ_ITEMS=t.MTZ_ITEMS,CR=t.CR||[],FAC=t.FAC||[],AREAS=t.AREAS||[],PROC=t.PROC||[],pintarHall(),pintarMtz(),pintarEdt(),pintarFac(),pintarAreas(),pintarProc(),window.GXP_MTZC&&window.GXP_MTZC.pintar()};</script>
 <script src="assets/acceso.js"></script>
 
-<script>
-/* ── Tema claro / oscuro ───────────────────────────────────────────────────
-   La preferencia se guarda en la misma clave que Dashboard.html, y como los
-   dos viven en el mismo origen, basta con eso para que al abrir cualquiera de
-   los dos ya salga en el tema elegido.
-
-   Para el cambio EN CALIENTE hace falta avisar al iframe: el dashboard ya
-   esta cargado y no va a releer localStorage por su cuenta. Se le manda un
-   postMessage y el escucha. */
-(function () {
-  const CLAVE = 'gxp.tema';
-
-  function pinta(tema) {
-    const oscuro = tema === 'dark';
-    document.documentElement.setAttribute('data-theme', oscuro ? 'dark' : 'light');
-    const ic = document.getElementById('icTema');
-    if (ic) ic.textContent = oscuro ? '☀' : '☾';
-    const bt = document.getElementById('btTema');
-    if (bt) {
-      bt.setAttribute('aria-pressed', oscuro ? 'true' : 'false');
-      bt.title = oscuro ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro';
-    }
-    const marco = document.getElementById('marco-dashboard');
-    if (marco && marco.contentWindow) {
-      marco.contentWindow.postMessage({ tipo: 'gxp:tema', tema: oscuro ? 'dark' : 'light' }, '*');
-    }
-  }
-
-  window.alternarTema = function () {
-    const actual = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
-    const nuevo = actual === 'dark' ? 'light' : 'dark';
-    pinta(nuevo);
-    try { localStorage.setItem(CLAVE, nuevo); } catch (e) { /* modo privado */ }
-  };
-
-  // El atributo ya viene puesto por el script de arriba; esto coloca el icono
-  // y, cuando el iframe termine de cargar, le pasa el tema.
-  const inicial = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => pinta(inicial));
-  } else { pinta(inicial); }
-
-  window.addEventListener('load', function () {
-    const marco = document.getElementById('marco-dashboard');
-    if (marco) marco.addEventListener('load', () => pinta(
-      document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light'));
-  });
-})();
-</script>
+<script>!function(){function t(t){const e="dark"===t;document.documentElement.setAttribute("data-theme",e?"dark":"light");const n=document.getElementById("icTema");n&&(n.textContent=e?"☀":"☾");const a=document.getElementById("btTema");a&&(a.setAttribute("aria-pressed",e?"true":"false"),a.title=e?"Cambiar a modo claro":"Cambiar a modo oscuro");const d=document.getElementById("marco-dashboard");d&&d.contentWindow&&d.contentWindow.postMessage({tipo:"gxp:tema",tema:e?"dark":"light"},"*")}window.alternarTema=function(){const e="dark"==("dark"===document.documentElement.getAttribute("data-theme")?"dark":"light")?"light":"dark";t(e);try{localStorage.setItem("gxp.tema",e)}catch(t){}};const e="dark"===document.documentElement.getAttribute("data-theme")?"dark":"light";"loading"===document.readyState?document.addEventListener("DOMContentLoaded",()=>t(e)):t(e),window.addEventListener("load",function(){const e=document.getElementById("marco-dashboard");e&&e.addEventListener("load",()=>t("dark"===document.documentElement.getAttribute("data-theme")?"dark":"light"))})}();</script>
 </body>
 </html>
