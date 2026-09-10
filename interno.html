@@ -1,6 +1,19 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+<!-- Candado de dominio: si esta pagina se copio y se sirve fuera del sitio
+     oficial, se oculta todo al instante (antes de que se pinte nada) y se
+     redirige al sitio real. display:none se aplica de forma sincronica
+     mientras el HTML se sigue analizando, asi que nada llega a mostrarse. -->
+<script>
+(function(){
+  var permitidos = ['racionalizacionogpl-coder.github.io', 'localhost', '127.0.0.1'];
+  if (permitidos.indexOf(location.hostname) === -1) {
+    try { document.documentElement.style.display = 'none'; } catch(e){}
+    location.replace('https://racionalizacionogpl-coder.github.io/DOC_DE_GXP_UNMSM/');
+  }
+})();
+</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Área interna · Diagnóstico documental UNMSM</title>
