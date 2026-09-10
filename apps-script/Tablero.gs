@@ -76,10 +76,29 @@ const TABLERO = {
 function tablero(opciones) {
   const sinCache = opciones && opciones.sinCache;
   const conDetalle = !opciones || opciones.detalle !== false;
+
+  /* PAGINACIÓN DEL DETALLE
+   *
+   * El detalle completo son ~17.000 filas (unos 6 MB). Apps Script no logra
+   * entregar una respuesta de ese tamaño: llega un 404 en la redirección de
+   * script.googleusercontent.com aunque la ejecución figure «Completada».
+   *
+   * Con `desde` y `limite` la web lo pide por tandas y las junta en el
+   * navegador. Sin esos parámetros el comportamiento es EXACTAMENTE el de
+   * antes, así que una versión anterior de la web sigue funcionando igual.
+   */
+  const desde  = (opciones && opciones.desde  != null)
+    ? Math.max(0, Number(opciones.desde) || 0) : null;
+  const limite = (opciones && opciones.limite != null)
+    ? Math.max(1, Number(opciones.limite) || 1) : null;
+  const paginado = conDetalle && desde !== null && limite !== null;
+
   const clave = conDetalle ? 'tablero_v1' : 'tablero_agregados_v1';
   const cache = CacheService.getScriptCache();
 
-  if (!sinCache) {
+  // Con detalle completo la respuesta no cabe en la caché (tope de 100 KB por
+  // clave), y cada tanda es distinta: no hay nada que reutilizar.
+  if (!sinCache && !paginado) {
     const guardado = cache.get(clave);
     if (guardado) {
       const previo = JSON.parse(guardado);
@@ -93,6 +112,16 @@ function tablero(opciones) {
   if (!conDetalle) {
     datos.registros = [];
     datos.soloAgregados = true;
+  }
+
+  if (paginado) {
+    const todas = datos.registros || [];
+    datos.totalRegistros = todas.length;
+    datos.desde = desde;
+    datos.registros = todas.slice(desde, desde + limite);
+    datos.hayMas = (desde + limite) < todas.length;
+    datos.paginado = true;
+    return datos;
   }
 
   try {
