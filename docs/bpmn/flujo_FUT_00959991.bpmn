@@ -1,0 +1,384 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL"
+  xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+  xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+  xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  id="DEF_FUT_00959991" targetNamespace="http://unmsm.edu.pe/bpmn/fut00959991"
+  exporter="generar_bpmn.py" exporterVersion="1.0">
+<collaboration id="COLAB_FUT">
+<documentation>Trazabilidad del expediente FUT Virtual N° 00959991/UNMSM en el Sistema de Gestión Documental de la UNMSM (10/08/26 al 30/10/26).</documentation>
+<participant id="P_ADM" name="Administrado / Solicitante" processRef="PROC_ADM" />
+<participant id="P_UNMSM" name="UNMSM - Trámite del FUT Virtual N° 00959991 (SGD)" processRef="PROC_UNMSM" />
+<messageFlow id="MF_01" name="FUT Virtual" sourceRef="A_T1" targetRef="SE_FUT" />
+</collaboration>
+<process id="PROC_ADM" name="Administrado" isExecutable="false"><startEvent id="A_SE" name="Necesidad de trámite"><outgoing>A_SF1</outgoing></startEvent><userTask id="A_T1" name="Presentar FUT Virtual por Mesa de Partes Virtual"><incoming>A_SF1</incoming><outgoing>A_SF2</outgoing></userTask><endEvent id="A_EE" name="FUT presentado"><incoming>A_SF2</incoming></endEvent><sequenceFlow id="A_SF1" sourceRef="A_SE" targetRef="A_T1" /><sequenceFlow id="A_SF2" sourceRef="A_T1" targetRef="A_EE" /></process>
+<process id="PROC_UNMSM" name="Trámite FUT Virtual N° 00959991" isExecutable="false">
+<laneSet id="LS_UNMSM"><lane id="L_MPSG" name="Mesa de Partes - MP - SG (UTD)"><flowNodeRef>SE_FUT</flowNodeRef><flowNodeRef>T01</flowNodeRef><flowNodeRef>T02</flowNodeRef><flowNodeRef>T12</flowNodeRef><flowNodeRef>T15</flowNodeRef></lane><lane id="L_R" name="Rectorado - R"><flowNodeRef>T03</flowNodeRef><flowNodeRef>GW1</flowNodeRef><flowNodeRef>T04</flowNodeRef><flowNodeRef>T13</flowNodeRef><flowNodeRef>GW2</flowNodeRef><flowNodeRef>T14</flowNodeRef></lane><lane id="L_UPRR" name="Rectorado - UPRR"><flowNodeRef>T16</flowNodeRef><flowNodeRef>T17</flowNodeRef></lane><lane id="L_DGA" name="Dirección General de Administración - DGA"><flowNodeRef>T05</flowNodeRef><flowNodeRef>T11</flowNodeRef></lane><lane id="L_MPOGPL" name="Mesa de Partes - MP - OGPL"><flowNodeRef>T06</flowNodeRef><flowNodeRef>T_MPOGPL</flowNodeRef><flowNodeRef>E_MPOGPL</flowNodeRef></lane><lane id="L_OP" name="Oficina de Presupuesto - OP - OGPL"><flowNodeRef>T07</flowNodeRef><flowNodeRef>T08</flowNodeRef></lane><lane id="L_OGPL" name="Oficina General de Planificación - OGPL"><flowNodeRef>T09</flowNodeRef></lane><lane id="L_OGE" name="Oficina General de Economía - OGE - DGA"><flowNodeRef>T10</flowNodeRef><flowNodeRef>T_OGE</flowNodeRef><flowNodeRef>E_OGE</flowNodeRef></lane><lane id="L_UTYC" name="Unidad de Transcripciones y Certificaciones - UTYC - OSA - SG"><flowNodeRef>T18</flowNodeRef><flowNodeRef>T19</flowNodeRef><flowNodeRef>GWP</flowNodeRef></lane><lane id="L_MPDGA" name="Mesa de Partes - MP - DGA"><flowNodeRef>T_MPDGA</flowNodeRef><flowNodeRef>E_MPDGA</flowNodeRef></lane><lane id="L_MPOGAL" name="Mesa de Partes - MP - OGAL"><flowNodeRef>T_MPOGAL</flowNodeRef><flowNodeRef>E_MPOGAL</flowNodeRef></lane><lane id="L_OGRRHH" name="Oficina General de Recursos Humanos - OGRRHH - DGA"><flowNodeRef>T_OGRRHH</flowNodeRef><flowNodeRef>T_OGRRHH2</flowNodeRef><flowNodeRef>GWP_RRHH</flowNodeRef></lane><lane id="L_OROS" name="Of. de Remuneraciones y Obligaciones Sociales - OROS - OGE - OGRRHH"><flowNodeRef>T_OROS</flowNodeRef><flowNodeRef>E_OROS</flowNodeRef></lane><lane id="L_OGESC" name="Oficina de Gestión y Escalafón - OGE - OGRRHH"><flowNodeRef>T_OGESC</flowNodeRef><flowNodeRef>E_OGESC</flowNodeRef></lane><lane id="L_OCPF" name="Of. de Control Previo y Fiscalización - OCPF - DGA"><flowNodeRef>T_OCPF</flowNodeRef><flowNodeRef>E_OCPF</flowNodeRef><flowNodeRef>BT_OCPF</flowNodeRef><flowNodeRef>T_OCPF2</flowNodeRef><flowNodeRef>E_OCPF2</flowNodeRef></lane><lane id="L_OC" name="Oficina de Contabilidad - OC - OGE - DGA"><flowNodeRef>T_OC</flowNodeRef><flowNodeRef>E_OC</flowNodeRef></lane><lane id="L_MPOT" name="Mesa de Partes - MP - OT - OGE - DGA"><flowNodeRef>T_MPOT</flowNodeRef><flowNodeRef>E_MPOT</flowNodeRef></lane><lane id="L_UAA" name="Unidad de Archivo Administrativo - UAA - OAC - SG"><flowNodeRef>T_UAA</flowNodeRef><flowNodeRef>E_UAA</flowNodeRef></lane><lane id="L_MPOCI" name="Mesa de Partes - MP - OCI"><flowNodeRef>T_MPOCI</flowNodeRef><flowNodeRef>E_MPOCI</flowNodeRef></lane><lane id="L_OTAIP" name="Of. de Transparencia y Acceso a la Información Pública - OTAIP - SG"><flowNodeRef>T_OTAIP</flowNodeRef><flowNodeRef>E_OTAIP</flowNodeRef></lane><lane id="L_MPFCM" name="Mesa de Partes - MP - FCM"><flowNodeRef>T_MPFCM</flowNodeRef><flowNodeRef>T_MPFCM2</flowNodeRef><flowNodeRef>T_MPFCM3</flowNodeRef><flowNodeRef>E_MPFCM</flowNodeRef></lane><lane id="L_DFCM" name="Decanato - D - FCM"><flowNodeRef>T_DFCM</flowNodeRef><flowNodeRef>T_DFCM2</flowNodeRef><flowNodeRef>GWP_FCM</flowNodeRef></lane><lane id="L_EPIO" name="Escuela Profesional de Investigación Operativa - EPIO - FCM"><flowNodeRef>T_EPIO</flowNodeRef><flowNodeRef>E_EPIO</flowNodeRef></lane></laneSet>
+<startEvent id="SE_FUT" name="FUT Virtual recibido"><documentation>Ingreso por Mesa de Partes Virtual del FUT N° 00959991/UNMSM (10/08/26 09:14).</documentation><outgoing>SF_01</outgoing><messageEventDefinition id="SE_FUT_md" /></startEvent>
+<userTask id="T01" name="Registrar FUT Virtual N° 00959991/UNMSM"><documentation>Emitido 10/08/26 09:14 | Origen y destino: MP-SG (ORIGINAL) | Recibido 10/08/26 09:15 | T. recepción 0m | Estado: DERIVADO.</documentation><incoming>SF_01</incoming><outgoing>SF_02</outgoing><dataOutputAssociation id="DOA_DO_01"><targetRef>DO_01</targetRef></dataOutputAssociation></userTask>
+<userTask id="T02" name="Emitir Proveído N° 026121-2026-UTD-SG/UNMSM y derivar a Rectorado"><documentation>Emitido 10/08/26 10:35 | Destino: Rectorado - R (ATENDER) | Recibido 10/08/26 12:33 | T. recepción 1h | Estado: DERIVADO.</documentation><incoming>SF_02</incoming><outgoing>SF_03</outgoing><dataOutputAssociation id="DOA_DO_02"><targetRef>DO_02</targetRef></dataOutputAssociation></userTask>
+<userTask id="T03" name="Recibir y evaluar expediente (rec. 10/08 12:33)"><documentation>El Rectorado recibe el expediente y evalúa si requiere opinión administrativa / presupuestal.</documentation><incoming>SF_03</incoming><outgoing>SF_04</outgoing></userTask>
+<exclusiveGateway id="GW1" name="¿Requiere opinión de DGA / presupuesto?" gatewayDirection="Diverging"><documentation>Decisión modelada: en el expediente real se tomó la rama SÍ.</documentation><incoming>SF_04</incoming><outgoing>SF_05</outgoing><outgoing>SF_16</outgoing></exclusiveGateway>
+<userTask id="T04" name="Emitir Proveído N° 014073-2026-R-D/UNMSM a DGA"><documentation>Emitido 01/09/26 15:45 | Destino: DGA (ATENDER) | Recibido 01/09/26 15:57 | T. recepción 11m | Estado: DERIVADO.</documentation><incoming>SF_05</incoming><outgoing>SF_06</outgoing><dataOutputAssociation id="DOA_DO_04"><targetRef>DO_04</targetRef></dataOutputAssociation></userTask>
+<userTask id="T05" name="Recibir (01/09 15:57) y emitir Proveído N° 002459-2026-DGA/UNMSM a OGPL"><documentation>Emitido 01/09/26 16:05 | Destino: MP-OGPL | Recibido 01/09/26 16:16 | T. recepción 10m | Estado: DERIVADO.</documentation><incoming>SF_06</incoming><outgoing>SF_07</outgoing><dataOutputAssociation id="DOA_DO_05"><targetRef>DO_05</targetRef></dataOutputAssociation></userTask>
+<userTask id="T06" name="Recibir (16:16) y emitir Hoja de Envío N° 003218-2026-MP-OGPL a OP"><documentation>Emitido 01/09/26 16:16 | Destino: Oficina de Presupuesto - OP - OGPL (ORIGINAL) | Recibido 01/09/26 16:18 | T. recepción 1m | Estado: DERIVADO.</documentation><incoming>SF_07</incoming><outgoing>SF_08</outgoing><dataOutputAssociation id="DOA_DO_06"><targetRef>DO_06</targetRef></dataOutputAssociation></userTask>
+<userTask id="T07" name="Evaluar disponibilidad presupuestal (rec. 16:18)"><documentation>La Oficina de Presupuesto analiza el pedido y prepara su respuesta.</documentation><incoming>SF_08</incoming><outgoing>SF_09</outgoing></userTask>
+<userTask id="T08" name="Emitir Hoja de Envío N° 001356-2026-OP-OGPL a OGPL"><documentation>Emitido 01/09/26 17:46 | Destino: OGPL (ORIGINAL) | Recibido 01/09/26 17:48 | T. recepción 1m | Estado: DERIVADO.</documentation><incoming>SF_09</incoming><outgoing>SF_10</outgoing><dataOutputAssociation id="DOA_DO_08"><targetRef>DO_08</targetRef></dataOutputAssociation></userTask>
+<userTask id="T09" name="Recibir (17:48) y emitir Proveído N° 002233-2026-OGPL/UNMSM a OGE"><documentation>Emitido 01/09/26 17:57 | Destino: OGE - DGA (ATENDER) | Recibido 02/09/26 10:19 | T. recepción 16h | Estado: DERIVADO.</documentation><incoming>SF_10</incoming><outgoing>SF_11</outgoing><dataOutputAssociation id="DOA_DO_09"><targetRef>DO_09</targetRef></dataOutputAssociation></userTask>
+<userTask id="T10" name="Recibir (02/09 10:19) y emitir Proveído N° 003440-2026-OGE-DGA a DGA"><documentation>Emitido 02/09/26 10:22 | Destino: DGA (ATENDER) | Recibido 02/09/26 10:36 | T. recepción 13m | Estado: DERIVADO.</documentation><incoming>SF_11</incoming><outgoing>SF_12</outgoing><dataOutputAssociation id="DOA_DO_10"><targetRef>DO_10</targetRef></dataOutputAssociation></userTask>
+<userTask id="T11" name="Recibir (10:36) y emitir Proveído N° 002493-2026-DGA/UNMSM a MP-SG"><documentation>Emitido 02/09/26 11:10 | Destino: MP-SG (ATENDER) | Recibido 02/09/26 11:26 | T. recepción 15m | Estado: DERIVADO.</documentation><incoming>SF_12</incoming><outgoing>SF_13</outgoing><dataOutputAssociation id="DOA_DO_11"><targetRef>DO_11</targetRef></dataOutputAssociation></userTask>
+<userTask id="T12" name="Recibir (11:26) y emitir Proveído N° 029408-2026-UTD-SG/UNMSM a Rectorado"><documentation>Emitido 02/09/26 13:54 | Destino: Rectorado - R (ATENDER) | Recibido 03/09/26 14:55 | T. recepción 1d 1h | Estado origen: ATENDIDO X DESTINO | Estado destino: ATENDIDO.</documentation><incoming>SF_13</incoming><outgoing>SF_14</outgoing><dataOutputAssociation id="DOA_DO_12"><targetRef>DO_12</targetRef></dataOutputAssociation></userTask>
+<userTask id="T13" name="Recibir (03/09 14:55) y atender expediente"><documentation>Estado destino: ATENDIDO. El Rectorado dispone la emisión de la resolución.</documentation><incoming>SF_14</incoming><outgoing>SF_15</outgoing></userTask>
+<exclusiveGateway id="GW2" name="" gatewayDirection="Converging"><documentation>Unión de las ramas de la decisión del Rectorado.</documentation><incoming>SF_15</incoming><incoming>SF_16</incoming><outgoing>SF_17</outgoing></exclusiveGateway>
+<userTask id="T14" name="Emitir Proveído N° 014311-2026-R-D/UNMSM a MP-SG"><documentation>Emitido 03/09/26 17:00 | Destino: MP-SG (ATENDER) | Recibido 03/09/26 17:32 | T. recepción 31m | Estado: DERIVADO.</documentation><incoming>SF_17</incoming><outgoing>SF_18</outgoing><dataOutputAssociation id="DOA_DO_14"><targetRef>DO_14</targetRef></dataOutputAssociation></userTask>
+<userTask id="T15" name="Recibir (17:32) y emitir Proveído N° 029679-2026-UTD-SG/UNMSM a UPRR"><documentation>Emitido 03/09/26 17:33 | Destino: Rectorado UPRR (ATENDER) | Recibido 04/09/26 15:40 | T. recepción 22h | Estado: DERIVADO.</documentation><incoming>SF_18</incoming><outgoing>SF_19</outgoing><dataOutputAssociation id="DOA_DO_15"><targetRef>DO_15</targetRef></dataOutputAssociation></userTask>
+<userTask id="T16" name="Recibir (04/09 15:40) y proyectar Resolución Rectoral"><documentation>La UPRR elabora el proyecto de resolución y lo eleva para firma.</documentation><incoming>SF_19</incoming><outgoing>SF_20</outgoing></userTask>
+<userTask id="T17" name="Emitir Resolución Rectoral N° 011678-2026-R/UNMSM"><documentation>Emitido 16/09/26 18:20 | Destino: UTYC - OSA - SG (ATENDER) | Recibido 17/09/26 09:51 | T. recepción 15h | Estado: DERIVADO.</documentation><incoming>SF_20</incoming><outgoing>SF_21</outgoing><dataOutputAssociation id="DOA_DO_17"><targetRef>DO_17</targetRef></dataOutputAssociation></userTask>
+<userTask id="T18" name="Recibir RR (17/09 09:51), transcribir y certificar"><documentation>La UTYC transcribe la Resolución Rectoral y prepara la distribución.</documentation><incoming>SF_21</incoming><outgoing>SF_22</outgoing></userTask>
+<userTask id="T19" name="Emitir Hoja de Envío N° 008533-2026-UTYC-OSA-SG/UNMSM"><documentation>Emitido 17/09/26 18:39 | 1 ORIGINAL (MP-DGA) + 11 COPIAS | Estado origen: RECIBIDO PARCIAL X DESTINO.</documentation><incoming>SF_22</incoming><outgoing>SF_23</outgoing><dataOutputAssociation id="DOA_DO_19"><targetRef>DO_19</targetRef></dataOutputAssociation></userTask>
+<parallelGateway id="GWP" name="Distribuir original y copias" gatewayDirection="Diverging"><documentation>Envío simultáneo a 12 dependencias destinatarias.</documentation><incoming>SF_23</incoming><outgoing>SF_24</outgoing><outgoing>SF_26</outgoing><outgoing>SF_28</outgoing><outgoing>SF_30</outgoing><outgoing>SF_32</outgoing><outgoing>SF_34</outgoing><outgoing>SF_36</outgoing><outgoing>SF_38</outgoing><outgoing>SF_40</outgoing><outgoing>SF_42</outgoing><outgoing>SF_46</outgoing><outgoing>SF_53</outgoing></parallelGateway>
+<userTask id="T_MPDGA" name="Recibir ORIGINAL (18/09 11:40) y archivar"><documentation>ORIGINAL | Recibido 18/09/26 11:40 | T. recepción 17h | ARCHIVADO.</documentation><incoming>SF_24</incoming><outgoing>SF_25</outgoing></userTask>
+<endEvent id="E_MPDGA" name="Original archivado"><incoming>SF_25</incoming></endEvent>
+<userTask id="T_MPOGAL" name="Recibir copia (20/09 19:59) y archivar"><documentation>COPIA | Recibido 20/09/26 19:59 | T. recepción 3d 1h | ARCHIVADO.</documentation><incoming>SF_26</incoming><outgoing>SF_27</outgoing></userTask>
+<endEvent id="E_MPOGAL" name="Copia archivada"><incoming>SF_27</incoming></endEvent>
+<userTask id="T_MPOGPL" name="Recibir copia (18/09 09:31) y archivar"><documentation>COPIA | Recibido 18/09/26 09:31 | T. recepción 14h | ARCHIVADO.</documentation><incoming>SF_28</incoming><outgoing>SF_29</outgoing></userTask>
+<endEvent id="E_MPOGPL" name="Copia archivada"><incoming>SF_29</incoming></endEvent>
+<userTask id="T_OGE" name="Recibir copia (18/09 09:19) y archivar"><documentation>COPIA | Recibido 18/09/26 09:19 | T. recepción 14h | ARCHIVADO.</documentation><incoming>SF_30</incoming><outgoing>SF_31</outgoing></userTask>
+<endEvent id="E_OGE" name="Copia archivada"><incoming>SF_31</incoming></endEvent>
+<userTask id="T_OCPF" name="Leer copia recibida"><documentation>COPIA | Sin fecha de recepción | Estado: NO LEÍDO | 42d 4h sin lectura.</documentation><incoming>SF_32</incoming><outgoing>SF_33</outgoing></userTask>
+<userTask id="T_OC" name="Recibir copia (18/09 11:44) y archivar"><documentation>COPIA | Recibido 18/09/26 11:44 | T. recepción 17h | ARCHIVADO.</documentation><incoming>SF_34</incoming><outgoing>SF_35</outgoing></userTask>
+<endEvent id="E_OC" name="Copia archivada"><incoming>SF_35</incoming></endEvent>
+<userTask id="T_MPOT" name="Recibir copia (18/09 12:38) y archivar"><documentation>COPIA | Recibido 18/09/26 12:38 | T. recepción 17h | ARCHIVADO.</documentation><incoming>SF_36</incoming><outgoing>SF_37</outgoing></userTask>
+<endEvent id="E_MPOT" name="Copia archivada"><incoming>SF_37</incoming></endEvent>
+<userTask id="T_UAA" name="Recibir copia (21/09 07:52) y archivar"><documentation>COPIA | Recibido 21/09/26 07:52 | T. recepción 3d 13h | ARCHIVADO.</documentation><incoming>SF_38</incoming><outgoing>SF_39</outgoing></userTask>
+<endEvent id="E_UAA" name="Copia archivada"><incoming>SF_39</incoming></endEvent>
+<userTask id="T_MPOCI" name="Recibir copia (18/09 09:23) y atender"><documentation>COPIA | Recibido 18/09/26 09:23 | T. recepción 14h | ATENDIDO.</documentation><incoming>SF_40</incoming><outgoing>SF_41</outgoing></userTask>
+<endEvent id="E_MPOCI" name="Copia atendida"><incoming>SF_41</incoming></endEvent>
+<userTask id="T_OTAIP" name="Recibir copia (18/09 09:01) y archivar"><documentation>COPIA | Recibido 18/09/26 09:01 | T. recepción 14h | ARCHIVADO.</documentation><incoming>SF_42</incoming><outgoing>SF_43</outgoing></userTask>
+<endEvent id="E_OTAIP" name="Copia archivada"><incoming>SF_43</incoming></endEvent>
+<endEvent id="E_OCPF" name="Copia leída"><incoming>SF_33</incoming></endEvent>
+<boundaryEvent id="BT_OCPF" name="42d 4h sin lectura" attachedToRef="T_OCPF" cancelActivity="false"><outgoing>SF_44</outgoing><timerEventDefinition id="BT_OCPF_td"><timeDuration xsi:type="tFormalExpression">P42DT4H</timeDuration></timerEventDefinition></boundaryEvent>
+<userTask id="T_OCPF2" name="Alerta: copia NO LEÍDA pendiente"><documentation>El sistema muestra la copia como NO LEÍDO después de 42d 4h.</documentation><incoming>SF_44</incoming><outgoing>SF_45</outgoing></userTask>
+<endEvent id="E_OCPF2" name="Pendiente de lectura"><incoming>SF_45</incoming></endEvent>
+<userTask id="T_OGRRHH" name="Recibir copia (18/09 14:41) y derivar"><documentation>COPIA | Recibido 18/09/26 14:41 | T. recepción 20h | Estado: DERIVADO.</documentation><incoming>SF_46</incoming><outgoing>SF_47</outgoing></userTask>
+<userTask id="T_OGRRHH2" name="Emitir Hoja de Envío N° 006211-2026-OGRRHH-DGA/UNMSM"><documentation>Emitido 18/09/26 16:00 | Estado origen: EMITIDO | 1 ORIGINAL (OROS) + 1 COPIA (Gestión y Escalafón).</documentation><incoming>SF_47</incoming><outgoing>SF_48</outgoing><dataOutputAssociation id="DOA_DO_RRHH"><targetRef>DO_RRHH</targetRef></dataOutputAssociation></userTask>
+<parallelGateway id="GWP_RRHH" name="Distribuir" gatewayDirection="Diverging"><incoming>SF_48</incoming><outgoing>SF_49</outgoing><outgoing>SF_51</outgoing></parallelGateway>
+<userTask id="T_OROS" name="Recibir ORIGINAL (18/09 16:40) y archivar"><documentation>ORIGINAL | Recibido 18/09/26 16:40 | T. recepción 39m | ARCHIVADO.</documentation><incoming>SF_49</incoming><outgoing>SF_50</outgoing></userTask>
+<endEvent id="E_OROS" name="Original archivado"><incoming>SF_50</incoming></endEvent>
+<userTask id="T_OGESC" name="Recibir copia (18/09 16:22) y archivar"><documentation>COPIA | Recibido 18/09/26 16:22 | T. recepción 21m | ARCHIVADO.</documentation><incoming>SF_51</incoming><outgoing>SF_52</outgoing></userTask>
+<endEvent id="E_OGESC" name="Copia archivada"><incoming>SF_52</incoming></endEvent>
+<userTask id="T_MPFCM" name="Recibir copia (18/09 06:34) y derivar"><documentation>COPIA | Recibido 18/09/26 06:34 | T. recepción 11h | Estado: DERIVADO.</documentation><incoming>SF_53</incoming><outgoing>SF_54</outgoing></userTask>
+<userTask id="T_MPFCM2" name="Emitir Hoja de Envío N° 003540-2026-MP-FCM/UNMSM a Decanato"><documentation>Emitido 18/09/26 06:41 | Destino: Decanato - D - FCM (ORIGINAL) | Recibido 18/09/26 08:44 | T. recepción 2h | Estado: ATENDIDO.</documentation><incoming>SF_54</incoming><outgoing>SF_55</outgoing><dataOutputAssociation id="DOA_DO_MPFCM"><targetRef>DO_MPFCM</targetRef></dataOutputAssociation></userTask>
+<userTask id="T_DFCM" name="Recibir (18/09 08:44) y atender"><documentation>Estado destino: ATENDIDO.</documentation><incoming>SF_55</incoming><outgoing>SF_56</outgoing></userTask>
+<userTask id="T_DFCM2" name="Emitir Hoja de Envío N° 002713-2026-D-FCM/UNMSM"><documentation>Emitido 18/09/26 14:39 | Estado origen: RECIBIDO X DESTINO | ORIGINAL a MP-FCM + COPIA a EPIO.</documentation><incoming>SF_56</incoming><outgoing>SF_57</outgoing><dataOutputAssociation id="DOA_DO_DFCM"><targetRef>DO_DFCM</targetRef></dataOutputAssociation></userTask>
+<parallelGateway id="GWP_FCM" name="Distribuir" gatewayDirection="Diverging"><incoming>SF_57</incoming><outgoing>SF_58</outgoing><outgoing>SF_60</outgoing></parallelGateway>
+<userTask id="T_MPFCM3" name="Recibir ORIGINAL (18/09 15:18)"><documentation>ORIGINAL | Recibido 18/09/26 15:18 | T. recepción 38m | Estado: RECIBIDO.</documentation><incoming>SF_58</incoming><outgoing>SF_59</outgoing></userTask>
+<endEvent id="E_MPFCM" name="Original recibido"><incoming>SF_59</incoming></endEvent>
+<userTask id="T_EPIO" name="Recibir copia (22/09 14:18)"><documentation>COPIA | Recibido 22/09/26 14:18 | T. recepción 3d 23h | Estado: RECIBIDO.</documentation><incoming>SF_60</incoming><outgoing>SF_61</outgoing></userTask>
+<endEvent id="E_EPIO" name="Copia recibida"><incoming>SF_61</incoming></endEvent>
+<sequenceFlow id="SF_01" sourceRef="SE_FUT" targetRef="T01" />
+<sequenceFlow id="SF_02" sourceRef="T01" targetRef="T02" />
+<sequenceFlow id="SF_03" sourceRef="T02" targetRef="T03" />
+<sequenceFlow id="SF_04" sourceRef="T03" targetRef="GW1" />
+<sequenceFlow id="SF_05" name="Sí" sourceRef="GW1" targetRef="T04" />
+<sequenceFlow id="SF_06" sourceRef="T04" targetRef="T05" />
+<sequenceFlow id="SF_07" sourceRef="T05" targetRef="T06" />
+<sequenceFlow id="SF_08" sourceRef="T06" targetRef="T07" />
+<sequenceFlow id="SF_09" sourceRef="T07" targetRef="T08" />
+<sequenceFlow id="SF_10" sourceRef="T08" targetRef="T09" />
+<sequenceFlow id="SF_11" sourceRef="T09" targetRef="T10" />
+<sequenceFlow id="SF_12" sourceRef="T10" targetRef="T11" />
+<sequenceFlow id="SF_13" sourceRef="T11" targetRef="T12" />
+<sequenceFlow id="SF_14" sourceRef="T12" targetRef="T13" />
+<sequenceFlow id="SF_15" sourceRef="T13" targetRef="GW2" />
+<sequenceFlow id="SF_16" name="No" sourceRef="GW1" targetRef="GW2" />
+<sequenceFlow id="SF_17" sourceRef="GW2" targetRef="T14" />
+<sequenceFlow id="SF_18" sourceRef="T14" targetRef="T15" />
+<sequenceFlow id="SF_19" sourceRef="T15" targetRef="T16" />
+<sequenceFlow id="SF_20" sourceRef="T16" targetRef="T17" />
+<sequenceFlow id="SF_21" sourceRef="T17" targetRef="T18" />
+<sequenceFlow id="SF_22" sourceRef="T18" targetRef="T19" />
+<sequenceFlow id="SF_23" sourceRef="T19" targetRef="GWP" />
+<sequenceFlow id="SF_24" sourceRef="GWP" targetRef="T_MPDGA" />
+<sequenceFlow id="SF_25" sourceRef="T_MPDGA" targetRef="E_MPDGA" />
+<sequenceFlow id="SF_26" sourceRef="GWP" targetRef="T_MPOGAL" />
+<sequenceFlow id="SF_27" sourceRef="T_MPOGAL" targetRef="E_MPOGAL" />
+<sequenceFlow id="SF_28" sourceRef="GWP" targetRef="T_MPOGPL" />
+<sequenceFlow id="SF_29" sourceRef="T_MPOGPL" targetRef="E_MPOGPL" />
+<sequenceFlow id="SF_30" sourceRef="GWP" targetRef="T_OGE" />
+<sequenceFlow id="SF_31" sourceRef="T_OGE" targetRef="E_OGE" />
+<sequenceFlow id="SF_32" sourceRef="GWP" targetRef="T_OCPF" />
+<sequenceFlow id="SF_33" sourceRef="T_OCPF" targetRef="E_OCPF" />
+<sequenceFlow id="SF_34" sourceRef="GWP" targetRef="T_OC" />
+<sequenceFlow id="SF_35" sourceRef="T_OC" targetRef="E_OC" />
+<sequenceFlow id="SF_36" sourceRef="GWP" targetRef="T_MPOT" />
+<sequenceFlow id="SF_37" sourceRef="T_MPOT" targetRef="E_MPOT" />
+<sequenceFlow id="SF_38" sourceRef="GWP" targetRef="T_UAA" />
+<sequenceFlow id="SF_39" sourceRef="T_UAA" targetRef="E_UAA" />
+<sequenceFlow id="SF_40" sourceRef="GWP" targetRef="T_MPOCI" />
+<sequenceFlow id="SF_41" sourceRef="T_MPOCI" targetRef="E_MPOCI" />
+<sequenceFlow id="SF_42" sourceRef="GWP" targetRef="T_OTAIP" />
+<sequenceFlow id="SF_43" sourceRef="T_OTAIP" targetRef="E_OTAIP" />
+<sequenceFlow id="SF_44" sourceRef="BT_OCPF" targetRef="T_OCPF2" />
+<sequenceFlow id="SF_45" sourceRef="T_OCPF2" targetRef="E_OCPF2" />
+<sequenceFlow id="SF_46" sourceRef="GWP" targetRef="T_OGRRHH" />
+<sequenceFlow id="SF_47" sourceRef="T_OGRRHH" targetRef="T_OGRRHH2" />
+<sequenceFlow id="SF_48" sourceRef="T_OGRRHH2" targetRef="GWP_RRHH" />
+<sequenceFlow id="SF_49" sourceRef="GWP_RRHH" targetRef="T_OROS" />
+<sequenceFlow id="SF_50" sourceRef="T_OROS" targetRef="E_OROS" />
+<sequenceFlow id="SF_51" sourceRef="GWP_RRHH" targetRef="T_OGESC" />
+<sequenceFlow id="SF_52" sourceRef="T_OGESC" targetRef="E_OGESC" />
+<sequenceFlow id="SF_53" sourceRef="GWP" targetRef="T_MPFCM" />
+<sequenceFlow id="SF_54" sourceRef="T_MPFCM" targetRef="T_MPFCM2" />
+<sequenceFlow id="SF_55" sourceRef="T_MPFCM2" targetRef="T_DFCM" />
+<sequenceFlow id="SF_56" sourceRef="T_DFCM" targetRef="T_DFCM2" />
+<sequenceFlow id="SF_57" sourceRef="T_DFCM2" targetRef="GWP_FCM" />
+<sequenceFlow id="SF_58" sourceRef="GWP_FCM" targetRef="T_MPFCM3" />
+<sequenceFlow id="SF_59" sourceRef="T_MPFCM3" targetRef="E_MPFCM" />
+<sequenceFlow id="SF_60" sourceRef="GWP_FCM" targetRef="T_EPIO" />
+<sequenceFlow id="SF_61" sourceRef="T_EPIO" targetRef="E_EPIO" />
+<dataObjectReference id="DO_01" name="FUT Virtual N° 00959991/UNMSM" dataObjectRef="DO_01_obj" /><dataObject id="DO_01_obj" />
+<dataObjectReference id="DO_02" name="Proveído N° 026121-2026-UTD-SG" dataObjectRef="DO_02_obj" /><dataObject id="DO_02_obj" />
+<dataObjectReference id="DO_04" name="Proveído N° 014073-2026-R-D" dataObjectRef="DO_04_obj" /><dataObject id="DO_04_obj" />
+<dataObjectReference id="DO_05" name="Proveído N° 002459-2026-DGA" dataObjectRef="DO_05_obj" /><dataObject id="DO_05_obj" />
+<dataObjectReference id="DO_06" name="HE N° 003218-2026-MP-OGPL" dataObjectRef="DO_06_obj" /><dataObject id="DO_06_obj" />
+<dataObjectReference id="DO_08" name="HE N° 001356-2026-OP-OGPL" dataObjectRef="DO_08_obj" /><dataObject id="DO_08_obj" />
+<dataObjectReference id="DO_09" name="Proveído N° 002233-2026-OGPL" dataObjectRef="DO_09_obj" /><dataObject id="DO_09_obj" />
+<dataObjectReference id="DO_10" name="Proveído N° 003440-2026-OGE-DGA" dataObjectRef="DO_10_obj" /><dataObject id="DO_10_obj" />
+<dataObjectReference id="DO_11" name="Proveído N° 002493-2026-DGA" dataObjectRef="DO_11_obj" /><dataObject id="DO_11_obj" />
+<dataObjectReference id="DO_12" name="Proveído N° 029408-2026-UTD-SG" dataObjectRef="DO_12_obj" /><dataObject id="DO_12_obj" />
+<dataObjectReference id="DO_14" name="Proveído N° 014311-2026-R-D" dataObjectRef="DO_14_obj" /><dataObject id="DO_14_obj" />
+<dataObjectReference id="DO_15" name="Proveído N° 029679-2026-UTD-SG" dataObjectRef="DO_15_obj" /><dataObject id="DO_15_obj" />
+<dataObjectReference id="DO_17" name="Resolución Rectoral N° 011678-2026-R" dataObjectRef="DO_17_obj" /><dataObject id="DO_17_obj" />
+<dataObjectReference id="DO_19" name="HE N° 008533-2026-UTYC-OSA-SG" dataObjectRef="DO_19_obj" /><dataObject id="DO_19_obj" />
+<dataObjectReference id="DO_RRHH" name="HE N° 006211-2026-OGRRHH-DGA" dataObjectRef="DO_RRHH_obj" /><dataObject id="DO_RRHH_obj" />
+<dataObjectReference id="DO_MPFCM" name="HE N° 003540-2026-MP-FCM" dataObjectRef="DO_MPFCM_obj" /><dataObject id="DO_MPFCM_obj" />
+<dataObjectReference id="DO_DFCM" name="HE N° 002713-2026-D-FCM" dataObjectRef="DO_DFCM_obj" /><dataObject id="DO_DFCM_obj" />
+<textAnnotation id="TA_01"><text>Inicio: 10/08/26 09:14
+Canal: Mesa de Partes Virtual</text></textAnnotation>
+<association id="AS_TA_01" sourceRef="TA_01" targetRef="SE_FUT" />
+<textAnnotation id="TA_02"><text>Supuesto de modelado: el SGD sólo registra la rama SÍ (01/09/26).
+Espera en Rectorado: 10/08 12:33 a 01/09 15:45 (22 días).</text></textAnnotation>
+<association id="AS_TA_02" sourceRef="TA_02" targetRef="GW1" />
+<textAnnotation id="TA_03"><text>Estado destino: ATENDIDO
+T. recepción del Proveído 029408: 1d 1h</text></textAnnotation>
+<association id="AS_TA_03" sourceRef="TA_03" targetRef="T13" />
+<textAnnotation id="TA_04"><text>Espera en UPRR: 04/09 15:40 a 16/09 18:20 (12 días)</text></textAnnotation>
+<association id="AS_TA_04" sourceRef="TA_04" targetRef="T17" />
+<textAnnotation id="TA_05"><text>HE 008533: 1 ORIGINAL + 11 COPIAS
+Estado origen: RECIBIDO PARCIAL X DESTINO</text></textAnnotation>
+<association id="AS_TA_05" sourceRef="TA_05" targetRef="GWP" />
+<textAnnotation id="TA_06"><text>ALERTA: única copia sin leer
+(NO LEÍDO, 42d 4h al 30/10/26)</text></textAnnotation>
+<association id="AS_TA_06" sourceRef="TA_06" targetRef="T_OCPF2" />
+<textAnnotation id="TA_07"><text>Estado origen HE 002713: RECIBIDO X DESTINO</text></textAnnotation>
+<association id="AS_TA_07" sourceRef="TA_07" targetRef="GWP_FCM" />
+</process>
+<bpmndi:BPMNDiagram id="DIAG_FUT" name="Flujo FUT Virtual N° 00959991">
+<bpmndi:BPMNPlane id="PLANE_FUT" bpmnElement="COLAB_FUT">
+<bpmndi:BPMNShape id="P_ADM_di" bpmnElement="P_ADM" isHorizontal="true"><dc:Bounds x="40" y="40" width="900" height="170" /></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="A_SE_di" bpmnElement="A_SE"><dc:Bounds x="150" y="107" width="36" height="36" /></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="A_T1_di" bpmnElement="A_T1"><dc:Bounds x="250" y="89" width="135" height="72" /></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="A_EE_di" bpmnElement="A_EE"><dc:Bounds x="440" y="107" width="36" height="36" /></bpmndi:BPMNShape>
+<bpmndi:BPMNEdge id="A_SF1_di" bpmnElement="A_SF1"><di:waypoint x="186" y="125" /><di:waypoint x="250" y="125" /></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="A_SF2_di" bpmnElement="A_SF2"><di:waypoint x="385" y="125" /><di:waypoint x="440" y="125" /></bpmndi:BPMNEdge>
+<bpmndi:BPMNShape id="P_UNMSM_di" bpmnElement="P_UNMSM" isHorizontal="true"><dc:Bounds x="40" y="260" width="5420" height="3450" /></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="L_MPSG_di" bpmnElement="L_MPSG" isHorizontal="true"><dc:Bounds x="70" y="260" width="5390" height="150" /></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="L_R_di" bpmnElement="L_R" isHorizontal="true"><dc:Bounds x="70" y="410" width="5390" height="150" /></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="L_UPRR_di" bpmnElement="L_UPRR" isHorizontal="true"><dc:Bounds x="70" y="560" width="5390" height="150" /></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="L_DGA_di" bpmnElement="L_DGA" isHorizontal="true"><dc:Bounds x="70" y="710" width="5390" height="150" /></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="L_MPOGPL_di" bpmnElement="L_MPOGPL" isHorizontal="true"><dc:Bounds x="70" y="860" width="5390" height="150" /></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="L_OP_di" bpmnElement="L_OP" isHorizontal="true"><dc:Bounds x="70" y="1010" width="5390" height="150" /></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="L_OGPL_di" bpmnElement="L_OGPL" isHorizontal="true"><dc:Bounds x="70" y="1160" width="5390" height="150" /></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="L_OGE_di" bpmnElement="L_OGE" isHorizontal="true"><dc:Bounds x="70" y="1310" width="5390" height="150" /></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="L_UTYC_di" bpmnElement="L_UTYC" isHorizontal="true"><dc:Bounds x="70" y="1460" width="5390" height="150" /></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="L_MPDGA_di" bpmnElement="L_MPDGA" isHorizontal="true"><dc:Bounds x="70" y="1610" width="5390" height="150" /></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="L_MPOGAL_di" bpmnElement="L_MPOGAL" isHorizontal="true"><dc:Bounds x="70" y="1760" width="5390" height="150" /></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="L_OGRRHH_di" bpmnElement="L_OGRRHH" isHorizontal="true"><dc:Bounds x="70" y="1910" width="5390" height="150" /></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="L_OROS_di" bpmnElement="L_OROS" isHorizontal="true"><dc:Bounds x="70" y="2060" width="5390" height="150" /></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="L_OGESC_di" bpmnElement="L_OGESC" isHorizontal="true"><dc:Bounds x="70" y="2210" width="5390" height="150" /></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="L_OCPF_di" bpmnElement="L_OCPF" isHorizontal="true"><dc:Bounds x="70" y="2360" width="5390" height="150" /></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="L_OC_di" bpmnElement="L_OC" isHorizontal="true"><dc:Bounds x="70" y="2510" width="5390" height="150" /></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="L_MPOT_di" bpmnElement="L_MPOT" isHorizontal="true"><dc:Bounds x="70" y="2660" width="5390" height="150" /></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="L_UAA_di" bpmnElement="L_UAA" isHorizontal="true"><dc:Bounds x="70" y="2810" width="5390" height="150" /></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="L_MPOCI_di" bpmnElement="L_MPOCI" isHorizontal="true"><dc:Bounds x="70" y="2960" width="5390" height="150" /></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="L_OTAIP_di" bpmnElement="L_OTAIP" isHorizontal="true"><dc:Bounds x="70" y="3110" width="5390" height="150" /></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="L_MPFCM_di" bpmnElement="L_MPFCM" isHorizontal="true"><dc:Bounds x="70" y="3260" width="5390" height="150" /></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="L_DFCM_di" bpmnElement="L_DFCM" isHorizontal="true"><dc:Bounds x="70" y="3410" width="5390" height="150" /></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="L_EPIO_di" bpmnElement="L_EPIO" isHorizontal="true"><dc:Bounds x="70" y="3560" width="5390" height="150" /></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="SE_FUT_di" bpmnElement="SE_FUT"><dc:Bounds x="260" y="300" width="36" height="36" /><bpmndi:BPMNLabel><dc:Bounds x="230" y="340" width="96" height="28" /></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="T01_di" bpmnElement="T01"><dc:Bounds x="385" y="282" width="135" height="72" /></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="T02_di" bpmnElement="T02"><dc:Bounds x="560" y="282" width="135" height="72" /></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="T03_di" bpmnElement="T03"><dc:Bounds x="735" y="432" width="135" height="72" /></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="GW1_di" bpmnElement="GW1" isMarkerVisible="true"><dc:Bounds x="952" y="443" width="50" height="50" /><bpmndi:BPMNLabel><dc:Bounds x="922" y="497" width="110" height="28" /></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="T04_di" bpmnElement="T04"><dc:Bounds x="1085" y="432" width="135" height="72" /></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="T05_di" bpmnElement="T05"><dc:Bounds x="1260" y="732" width="135" height="72" /></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="T06_di" bpmnElement="T06"><dc:Bounds x="1435" y="882" width="135" height="72" /></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="T07_di" bpmnElement="T07"><dc:Bounds x="1610" y="1032" width="135" height="72" /></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="T08_di" bpmnElement="T08"><dc:Bounds x="1785" y="1032" width="135" height="72" /></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="T09_di" bpmnElement="T09"><dc:Bounds x="1960" y="1182" width="135" height="72" /></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="T10_di" bpmnElement="T10"><dc:Bounds x="2135" y="1332" width="135" height="72" /></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="T11_di" bpmnElement="T11"><dc:Bounds x="2310" y="732" width="135" height="72" /></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="T12_di" bpmnElement="T12"><dc:Bounds x="2485" y="282" width="135" height="72" /></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="T13_di" bpmnElement="T13"><dc:Bounds x="2660" y="432" width="135" height="72" /></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="GW2_di" bpmnElement="GW2" isMarkerVisible="true"><dc:Bounds x="2878" y="443" width="50" height="50" /></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="T14_di" bpmnElement="T14"><dc:Bounds x="3010" y="432" width="135" height="72" /></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="T15_di" bpmnElement="T15"><dc:Bounds x="3185" y="282" width="135" height="72" /></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="T16_di" bpmnElement="T16"><dc:Bounds x="3360" y="582" width="135" height="72" /></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="T17_di" bpmnElement="T17"><dc:Bounds x="3535" y="582" width="135" height="72" /></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="T18_di" bpmnElement="T18"><dc:Bounds x="3710" y="1482" width="135" height="72" /></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="T19_di" bpmnElement="T19"><dc:Bounds x="3885" y="1482" width="135" height="72" /></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="GWP_di" bpmnElement="GWP"><dc:Bounds x="4102" y="1493" width="50" height="50" /><bpmndi:BPMNLabel><dc:Bounds x="4072" y="1547" width="110" height="28" /></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="T_MPDGA_di" bpmnElement="T_MPDGA"><dc:Bounds x="4235" y="1632" width="135" height="72" /></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="E_MPDGA_di" bpmnElement="E_MPDGA"><dc:Bounds x="4460" y="1650" width="36" height="36" /><bpmndi:BPMNLabel><dc:Bounds x="4430" y="1690" width="96" height="28" /></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="T_MPOGAL_di" bpmnElement="T_MPOGAL"><dc:Bounds x="4235" y="1782" width="135" height="72" /></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="E_MPOGAL_di" bpmnElement="E_MPOGAL"><dc:Bounds x="4460" y="1800" width="36" height="36" /><bpmndi:BPMNLabel><dc:Bounds x="4430" y="1840" width="96" height="28" /></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="T_MPOGPL_di" bpmnElement="T_MPOGPL"><dc:Bounds x="4235" y="882" width="135" height="72" /></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="E_MPOGPL_di" bpmnElement="E_MPOGPL"><dc:Bounds x="4460" y="900" width="36" height="36" /><bpmndi:BPMNLabel><dc:Bounds x="4430" y="940" width="96" height="28" /></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="T_OGE_di" bpmnElement="T_OGE"><dc:Bounds x="4235" y="1332" width="135" height="72" /></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="E_OGE_di" bpmnElement="E_OGE"><dc:Bounds x="4460" y="1350" width="36" height="36" /><bpmndi:BPMNLabel><dc:Bounds x="4430" y="1390" width="96" height="28" /></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="T_OCPF_di" bpmnElement="T_OCPF"><dc:Bounds x="4235" y="2382" width="135" height="72" /></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="T_OC_di" bpmnElement="T_OC"><dc:Bounds x="4235" y="2532" width="135" height="72" /></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="E_OC_di" bpmnElement="E_OC"><dc:Bounds x="4460" y="2550" width="36" height="36" /><bpmndi:BPMNLabel><dc:Bounds x="4430" y="2590" width="96" height="28" /></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="T_MPOT_di" bpmnElement="T_MPOT"><dc:Bounds x="4235" y="2682" width="135" height="72" /></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="E_MPOT_di" bpmnElement="E_MPOT"><dc:Bounds x="4460" y="2700" width="36" height="36" /><bpmndi:BPMNLabel><dc:Bounds x="4430" y="2740" width="96" height="28" /></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="T_UAA_di" bpmnElement="T_UAA"><dc:Bounds x="4235" y="2832" width="135" height="72" /></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="E_UAA_di" bpmnElement="E_UAA"><dc:Bounds x="4460" y="2850" width="36" height="36" /><bpmndi:BPMNLabel><dc:Bounds x="4430" y="2890" width="96" height="28" /></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="T_MPOCI_di" bpmnElement="T_MPOCI"><dc:Bounds x="4235" y="2982" width="135" height="72" /></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="E_MPOCI_di" bpmnElement="E_MPOCI"><dc:Bounds x="4460" y="3000" width="36" height="36" /><bpmndi:BPMNLabel><dc:Bounds x="4430" y="3040" width="96" height="28" /></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="T_OTAIP_di" bpmnElement="T_OTAIP"><dc:Bounds x="4235" y="3132" width="135" height="72" /></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="E_OTAIP_di" bpmnElement="E_OTAIP"><dc:Bounds x="4460" y="3150" width="36" height="36" /><bpmndi:BPMNLabel><dc:Bounds x="4430" y="3190" width="96" height="28" /></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="E_OCPF_di" bpmnElement="E_OCPF"><dc:Bounds x="4460" y="2400" width="36" height="36" /><bpmndi:BPMNLabel><dc:Bounds x="4430" y="2440" width="96" height="28" /></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="BT_OCPF_di" bpmnElement="BT_OCPF"><dc:Bounds x="4320" y="2436" width="36" height="36" /><bpmndi:BPMNLabel><dc:Bounds x="4356" y="2476" width="96" height="28" /></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="T_OCPF2_di" bpmnElement="T_OCPF2"><dc:Bounds x="4585" y="2382" width="135" height="72" /></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="E_OCPF2_di" bpmnElement="E_OCPF2"><dc:Bounds x="4810" y="2400" width="36" height="36" /><bpmndi:BPMNLabel><dc:Bounds x="4780" y="2440" width="96" height="28" /></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="T_OGRRHH_di" bpmnElement="T_OGRRHH"><dc:Bounds x="4235" y="1932" width="135" height="72" /></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="T_OGRRHH2_di" bpmnElement="T_OGRRHH2"><dc:Bounds x="4410" y="1932" width="135" height="72" /></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="GWP_RRHH_di" bpmnElement="GWP_RRHH"><dc:Bounds x="4628" y="1943" width="50" height="50" /><bpmndi:BPMNLabel><dc:Bounds x="4598" y="1997" width="110" height="28" /></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="T_OROS_di" bpmnElement="T_OROS"><dc:Bounds x="4760" y="2082" width="135" height="72" /></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="E_OROS_di" bpmnElement="E_OROS"><dc:Bounds x="4984" y="2100" width="36" height="36" /><bpmndi:BPMNLabel><dc:Bounds x="4954" y="2140" width="96" height="28" /></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="T_OGESC_di" bpmnElement="T_OGESC"><dc:Bounds x="4760" y="2232" width="135" height="72" /></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="E_OGESC_di" bpmnElement="E_OGESC"><dc:Bounds x="4984" y="2250" width="36" height="36" /><bpmndi:BPMNLabel><dc:Bounds x="4954" y="2290" width="96" height="28" /></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="T_MPFCM_di" bpmnElement="T_MPFCM"><dc:Bounds x="4235" y="3282" width="135" height="72" /></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="T_MPFCM2_di" bpmnElement="T_MPFCM2"><dc:Bounds x="4410" y="3282" width="135" height="72" /></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="T_DFCM_di" bpmnElement="T_DFCM"><dc:Bounds x="4585" y="3432" width="135" height="72" /></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="T_DFCM2_di" bpmnElement="T_DFCM2"><dc:Bounds x="4760" y="3432" width="135" height="72" /></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="GWP_FCM_di" bpmnElement="GWP_FCM"><dc:Bounds x="4978" y="3443" width="50" height="50" /><bpmndi:BPMNLabel><dc:Bounds x="4948" y="3497" width="110" height="28" /></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="T_MPFCM3_di" bpmnElement="T_MPFCM3"><dc:Bounds x="5110" y="3282" width="135" height="72" /></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="E_MPFCM_di" bpmnElement="E_MPFCM"><dc:Bounds x="5334" y="3300" width="36" height="36" /><bpmndi:BPMNLabel><dc:Bounds x="5304" y="3340" width="96" height="28" /></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="T_EPIO_di" bpmnElement="T_EPIO"><dc:Bounds x="5110" y="3582" width="135" height="72" /></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="E_EPIO_di" bpmnElement="E_EPIO"><dc:Bounds x="5334" y="3600" width="36" height="36" /><bpmndi:BPMNLabel><dc:Bounds x="5304" y="3640" width="96" height="28" /></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+<bpmndi:BPMNEdge id="SF_01_di" bpmnElement="SF_01"><di:waypoint x="296" y="318" /><di:waypoint x="385" y="318" /></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="SF_02_di" bpmnElement="SF_02"><di:waypoint x="520" y="318" /><di:waypoint x="560" y="318" /></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="SF_03_di" bpmnElement="SF_03"><di:waypoint x="695" y="318" /><di:waypoint x="715" y="318" /><di:waypoint x="715" y="468" /><di:waypoint x="735" y="468" /></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="SF_04_di" bpmnElement="SF_04"><di:waypoint x="870" y="468" /><di:waypoint x="952" y="468" /></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="SF_05_di" bpmnElement="SF_05"><di:waypoint x="1002" y="468" /><di:waypoint x="1085" y="468" /></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="SF_06_di" bpmnElement="SF_06"><di:waypoint x="1220" y="468" /><di:waypoint x="1240" y="468" /><di:waypoint x="1240" y="768" /><di:waypoint x="1260" y="768" /></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="SF_07_di" bpmnElement="SF_07"><di:waypoint x="1395" y="768" /><di:waypoint x="1415" y="768" /><di:waypoint x="1415" y="918" /><di:waypoint x="1435" y="918" /></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="SF_08_di" bpmnElement="SF_08"><di:waypoint x="1570" y="918" /><di:waypoint x="1590" y="918" /><di:waypoint x="1590" y="1068" /><di:waypoint x="1610" y="1068" /></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="SF_09_di" bpmnElement="SF_09"><di:waypoint x="1745" y="1068" /><di:waypoint x="1785" y="1068" /></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="SF_10_di" bpmnElement="SF_10"><di:waypoint x="1920" y="1068" /><di:waypoint x="1940" y="1068" /><di:waypoint x="1940" y="1218" /><di:waypoint x="1960" y="1218" /></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="SF_11_di" bpmnElement="SF_11"><di:waypoint x="2095" y="1218" /><di:waypoint x="2115" y="1218" /><di:waypoint x="2115" y="1368" /><di:waypoint x="2135" y="1368" /></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="SF_12_di" bpmnElement="SF_12"><di:waypoint x="2270" y="1368" /><di:waypoint x="2290" y="1368" /><di:waypoint x="2290" y="768" /><di:waypoint x="2310" y="768" /></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="SF_13_di" bpmnElement="SF_13"><di:waypoint x="2445" y="768" /><di:waypoint x="2465" y="768" /><di:waypoint x="2465" y="318" /><di:waypoint x="2485" y="318" /></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="SF_14_di" bpmnElement="SF_14"><di:waypoint x="2620" y="318" /><di:waypoint x="2640" y="318" /><di:waypoint x="2640" y="468" /><di:waypoint x="2660" y="468" /></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="SF_15_di" bpmnElement="SF_15"><di:waypoint x="2795" y="468" /><di:waypoint x="2878" y="468" /></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="SF_16_di" bpmnElement="SF_16"><di:waypoint x="978" y="443" /><di:waypoint x="978" y="420" /><di:waypoint x="2902" y="420" /><di:waypoint x="2902" y="443" /></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="SF_17_di" bpmnElement="SF_17"><di:waypoint x="2928" y="468" /><di:waypoint x="3010" y="468" /></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="SF_18_di" bpmnElement="SF_18"><di:waypoint x="3145" y="468" /><di:waypoint x="3165" y="468" /><di:waypoint x="3165" y="318" /><di:waypoint x="3185" y="318" /></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="SF_19_di" bpmnElement="SF_19"><di:waypoint x="3320" y="318" /><di:waypoint x="3340" y="318" /><di:waypoint x="3340" y="618" /><di:waypoint x="3360" y="618" /></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="SF_20_di" bpmnElement="SF_20"><di:waypoint x="3495" y="618" /><di:waypoint x="3535" y="618" /></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="SF_21_di" bpmnElement="SF_21"><di:waypoint x="3670" y="618" /><di:waypoint x="3690" y="618" /><di:waypoint x="3690" y="1518" /><di:waypoint x="3710" y="1518" /></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="SF_22_di" bpmnElement="SF_22"><di:waypoint x="3845" y="1518" /><di:waypoint x="3885" y="1518" /></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="SF_23_di" bpmnElement="SF_23"><di:waypoint x="4020" y="1518" /><di:waypoint x="4102" y="1518" /></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="SF_24_di" bpmnElement="SF_24"><di:waypoint x="4128" y="1543" /><di:waypoint x="4128" y="1668" /><di:waypoint x="4235" y="1668" /></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="SF_25_di" bpmnElement="SF_25"><di:waypoint x="4370" y="1668" /><di:waypoint x="4460" y="1668" /></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="SF_26_di" bpmnElement="SF_26"><di:waypoint x="4128" y="1543" /><di:waypoint x="4128" y="1818" /><di:waypoint x="4235" y="1818" /></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="SF_27_di" bpmnElement="SF_27"><di:waypoint x="4370" y="1818" /><di:waypoint x="4460" y="1818" /></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="SF_28_di" bpmnElement="SF_28"><di:waypoint x="4128" y="1493" /><di:waypoint x="4128" y="918" /><di:waypoint x="4235" y="918" /></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="SF_29_di" bpmnElement="SF_29"><di:waypoint x="4370" y="918" /><di:waypoint x="4460" y="918" /></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="SF_30_di" bpmnElement="SF_30"><di:waypoint x="4128" y="1493" /><di:waypoint x="4128" y="1368" /><di:waypoint x="4235" y="1368" /></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="SF_31_di" bpmnElement="SF_31"><di:waypoint x="4370" y="1368" /><di:waypoint x="4460" y="1368" /></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="SF_32_di" bpmnElement="SF_32"><di:waypoint x="4128" y="1543" /><di:waypoint x="4128" y="2418" /><di:waypoint x="4235" y="2418" /></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="SF_33_di" bpmnElement="SF_33"><di:waypoint x="4370" y="2418" /><di:waypoint x="4460" y="2418" /></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="SF_34_di" bpmnElement="SF_34"><di:waypoint x="4128" y="1543" /><di:waypoint x="4128" y="2568" /><di:waypoint x="4235" y="2568" /></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="SF_35_di" bpmnElement="SF_35"><di:waypoint x="4370" y="2568" /><di:waypoint x="4460" y="2568" /></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="SF_36_di" bpmnElement="SF_36"><di:waypoint x="4128" y="1543" /><di:waypoint x="4128" y="2718" /><di:waypoint x="4235" y="2718" /></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="SF_37_di" bpmnElement="SF_37"><di:waypoint x="4370" y="2718" /><di:waypoint x="4460" y="2718" /></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="SF_38_di" bpmnElement="SF_38"><di:waypoint x="4128" y="1543" /><di:waypoint x="4128" y="2868" /><di:waypoint x="4235" y="2868" /></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="SF_39_di" bpmnElement="SF_39"><di:waypoint x="4370" y="2868" /><di:waypoint x="4460" y="2868" /></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="SF_40_di" bpmnElement="SF_40"><di:waypoint x="4128" y="1543" /><di:waypoint x="4128" y="3018" /><di:waypoint x="4235" y="3018" /></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="SF_41_di" bpmnElement="SF_41"><di:waypoint x="4370" y="3018" /><di:waypoint x="4460" y="3018" /></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="SF_42_di" bpmnElement="SF_42"><di:waypoint x="4128" y="1543" /><di:waypoint x="4128" y="3168" /><di:waypoint x="4235" y="3168" /></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="SF_43_di" bpmnElement="SF_43"><di:waypoint x="4370" y="3168" /><di:waypoint x="4460" y="3168" /></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="SF_44_di" bpmnElement="SF_44"><di:waypoint x="4338" y="2472" /><di:waypoint x="4338" y="2496" /><di:waypoint x="4652" y="2496" /><di:waypoint x="4652" y="2454" /></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="SF_45_di" bpmnElement="SF_45"><di:waypoint x="4720" y="2418" /><di:waypoint x="4810" y="2418" /></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="SF_46_di" bpmnElement="SF_46"><di:waypoint x="4128" y="1543" /><di:waypoint x="4128" y="1968" /><di:waypoint x="4235" y="1968" /></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="SF_47_di" bpmnElement="SF_47"><di:waypoint x="4370" y="1968" /><di:waypoint x="4410" y="1968" /></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="SF_48_di" bpmnElement="SF_48"><di:waypoint x="4545" y="1968" /><di:waypoint x="4628" y="1968" /></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="SF_49_di" bpmnElement="SF_49"><di:waypoint x="4652" y="1993" /><di:waypoint x="4652" y="2118" /><di:waypoint x="4760" y="2118" /></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="SF_50_di" bpmnElement="SF_50"><di:waypoint x="4895" y="2118" /><di:waypoint x="4984" y="2118" /></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="SF_51_di" bpmnElement="SF_51"><di:waypoint x="4652" y="1993" /><di:waypoint x="4652" y="2268" /><di:waypoint x="4760" y="2268" /></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="SF_52_di" bpmnElement="SF_52"><di:waypoint x="4895" y="2268" /><di:waypoint x="4984" y="2268" /></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="SF_53_di" bpmnElement="SF_53"><di:waypoint x="4128" y="1543" /><di:waypoint x="4128" y="3318" /><di:waypoint x="4235" y="3318" /></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="SF_54_di" bpmnElement="SF_54"><di:waypoint x="4370" y="3318" /><di:waypoint x="4410" y="3318" /></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="SF_55_di" bpmnElement="SF_55"><di:waypoint x="4545" y="3318" /><di:waypoint x="4565" y="3318" /><di:waypoint x="4565" y="3468" /><di:waypoint x="4585" y="3468" /></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="SF_56_di" bpmnElement="SF_56"><di:waypoint x="4720" y="3468" /><di:waypoint x="4760" y="3468" /></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="SF_57_di" bpmnElement="SF_57"><di:waypoint x="4895" y="3468" /><di:waypoint x="4978" y="3468" /></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="SF_58_di" bpmnElement="SF_58"><di:waypoint x="5002" y="3443" /><di:waypoint x="5002" y="3318" /><di:waypoint x="5110" y="3318" /></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="SF_59_di" bpmnElement="SF_59"><di:waypoint x="5245" y="3318" /><di:waypoint x="5334" y="3318" /></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="SF_60_di" bpmnElement="SF_60"><di:waypoint x="5002" y="3493" /><di:waypoint x="5002" y="3618" /><di:waypoint x="5110" y="3618" /></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="SF_61_di" bpmnElement="SF_61"><di:waypoint x="5245" y="3618" /><di:waypoint x="5334" y="3618" /></bpmndi:BPMNEdge>
+<bpmndi:BPMNShape id="DO_01_di" bpmnElement="DO_01"><dc:Bounds x="480" y="360" width="36" height="46" /><bpmndi:BPMNLabel><dc:Bounds x="385" y="368" width="92" height="30" /></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+<bpmndi:BPMNEdge id="DOA_DO_01_di" bpmnElement="DOA_DO_01"><di:waypoint x="508" y="354" /><di:waypoint x="498" y="360" /></bpmndi:BPMNEdge>
+<bpmndi:BPMNShape id="DO_02_di" bpmnElement="DO_02"><dc:Bounds x="655" y="360" width="36" height="46" /><bpmndi:BPMNLabel><dc:Bounds x="560" y="368" width="92" height="30" /></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+<bpmndi:BPMNEdge id="DOA_DO_02_di" bpmnElement="DOA_DO_02"><di:waypoint x="683" y="354" /><di:waypoint x="673" y="360" /></bpmndi:BPMNEdge>
+<bpmndi:BPMNShape id="DO_04_di" bpmnElement="DO_04"><dc:Bounds x="1180" y="510" width="36" height="46" /><bpmndi:BPMNLabel><dc:Bounds x="1085" y="518" width="92" height="30" /></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+<bpmndi:BPMNEdge id="DOA_DO_04_di" bpmnElement="DOA_DO_04"><di:waypoint x="1208" y="504" /><di:waypoint x="1198" y="510" /></bpmndi:BPMNEdge>
+<bpmndi:BPMNShape id="DO_05_di" bpmnElement="DO_05"><dc:Bounds x="1355" y="810" width="36" height="46" /><bpmndi:BPMNLabel><dc:Bounds x="1260" y="818" width="92" height="30" /></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+<bpmndi:BPMNEdge id="DOA_DO_05_di" bpmnElement="DOA_DO_05"><di:waypoint x="1383" y="804" /><di:waypoint x="1373" y="810" /></bpmndi:BPMNEdge>
+<bpmndi:BPMNShape id="DO_06_di" bpmnElement="DO_06"><dc:Bounds x="1530" y="960" width="36" height="46" /><bpmndi:BPMNLabel><dc:Bounds x="1435" y="968" width="92" height="30" /></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+<bpmndi:BPMNEdge id="DOA_DO_06_di" bpmnElement="DOA_DO_06"><di:waypoint x="1558" y="954" /><di:waypoint x="1548" y="960" /></bpmndi:BPMNEdge>
+<bpmndi:BPMNShape id="DO_08_di" bpmnElement="DO_08"><dc:Bounds x="1880" y="1110" width="36" height="46" /><bpmndi:BPMNLabel><dc:Bounds x="1785" y="1118" width="92" height="30" /></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+<bpmndi:BPMNEdge id="DOA_DO_08_di" bpmnElement="DOA_DO_08"><di:waypoint x="1908" y="1104" /><di:waypoint x="1898" y="1110" /></bpmndi:BPMNEdge>
+<bpmndi:BPMNShape id="DO_09_di" bpmnElement="DO_09"><dc:Bounds x="2055" y="1260" width="36" height="46" /><bpmndi:BPMNLabel><dc:Bounds x="1960" y="1268" width="92" height="30" /></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+<bpmndi:BPMNEdge id="DOA_DO_09_di" bpmnElement="DOA_DO_09"><di:waypoint x="2083" y="1254" /><di:waypoint x="2073" y="1260" /></bpmndi:BPMNEdge>
+<bpmndi:BPMNShape id="DO_10_di" bpmnElement="DO_10"><dc:Bounds x="2230" y="1410" width="36" height="46" /><bpmndi:BPMNLabel><dc:Bounds x="2135" y="1418" width="92" height="30" /></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+<bpmndi:BPMNEdge id="DOA_DO_10_di" bpmnElement="DOA_DO_10"><di:waypoint x="2258" y="1404" /><di:waypoint x="2248" y="1410" /></bpmndi:BPMNEdge>
+<bpmndi:BPMNShape id="DO_11_di" bpmnElement="DO_11"><dc:Bounds x="2405" y="810" width="36" height="46" /><bpmndi:BPMNLabel><dc:Bounds x="2310" y="818" width="92" height="30" /></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+<bpmndi:BPMNEdge id="DOA_DO_11_di" bpmnElement="DOA_DO_11"><di:waypoint x="2433" y="804" /><di:waypoint x="2423" y="810" /></bpmndi:BPMNEdge>
+<bpmndi:BPMNShape id="DO_12_di" bpmnElement="DO_12"><dc:Bounds x="2580" y="360" width="36" height="46" /><bpmndi:BPMNLabel><dc:Bounds x="2485" y="368" width="92" height="30" /></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+<bpmndi:BPMNEdge id="DOA_DO_12_di" bpmnElement="DOA_DO_12"><di:waypoint x="2608" y="354" /><di:waypoint x="2598" y="360" /></bpmndi:BPMNEdge>
+<bpmndi:BPMNShape id="DO_14_di" bpmnElement="DO_14"><dc:Bounds x="3105" y="510" width="36" height="46" /><bpmndi:BPMNLabel><dc:Bounds x="3010" y="518" width="92" height="30" /></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+<bpmndi:BPMNEdge id="DOA_DO_14_di" bpmnElement="DOA_DO_14"><di:waypoint x="3133" y="504" /><di:waypoint x="3123" y="510" /></bpmndi:BPMNEdge>
+<bpmndi:BPMNShape id="DO_15_di" bpmnElement="DO_15"><dc:Bounds x="3280" y="360" width="36" height="46" /><bpmndi:BPMNLabel><dc:Bounds x="3185" y="368" width="92" height="30" /></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+<bpmndi:BPMNEdge id="DOA_DO_15_di" bpmnElement="DOA_DO_15"><di:waypoint x="3308" y="354" /><di:waypoint x="3298" y="360" /></bpmndi:BPMNEdge>
+<bpmndi:BPMNShape id="DO_17_di" bpmnElement="DO_17"><dc:Bounds x="3630" y="660" width="36" height="46" /><bpmndi:BPMNLabel><dc:Bounds x="3535" y="668" width="92" height="30" /></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+<bpmndi:BPMNEdge id="DOA_DO_17_di" bpmnElement="DOA_DO_17"><di:waypoint x="3658" y="654" /><di:waypoint x="3648" y="660" /></bpmndi:BPMNEdge>
+<bpmndi:BPMNShape id="DO_19_di" bpmnElement="DO_19"><dc:Bounds x="3980" y="1560" width="36" height="46" /><bpmndi:BPMNLabel><dc:Bounds x="3885" y="1568" width="92" height="30" /></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+<bpmndi:BPMNEdge id="DOA_DO_19_di" bpmnElement="DOA_DO_19"><di:waypoint x="4008" y="1554" /><di:waypoint x="3998" y="1560" /></bpmndi:BPMNEdge>
+<bpmndi:BPMNShape id="DO_RRHH_di" bpmnElement="DO_RRHH"><dc:Bounds x="4505" y="2010" width="36" height="46" /><bpmndi:BPMNLabel><dc:Bounds x="4410" y="2018" width="92" height="30" /></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+<bpmndi:BPMNEdge id="DOA_DO_RRHH_di" bpmnElement="DOA_DO_RRHH"><di:waypoint x="4533" y="2004" /><di:waypoint x="4523" y="2010" /></bpmndi:BPMNEdge>
+<bpmndi:BPMNShape id="DO_MPFCM_di" bpmnElement="DO_MPFCM"><dc:Bounds x="4505" y="3360" width="36" height="46" /><bpmndi:BPMNLabel><dc:Bounds x="4410" y="3368" width="92" height="30" /></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+<bpmndi:BPMNEdge id="DOA_DO_MPFCM_di" bpmnElement="DOA_DO_MPFCM"><di:waypoint x="4533" y="3354" /><di:waypoint x="4523" y="3360" /></bpmndi:BPMNEdge>
+<bpmndi:BPMNShape id="DO_DFCM_di" bpmnElement="DO_DFCM"><dc:Bounds x="4855" y="3510" width="36" height="46" /><bpmndi:BPMNLabel><dc:Bounds x="4760" y="3518" width="92" height="30" /></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+<bpmndi:BPMNEdge id="DOA_DO_DFCM_di" bpmnElement="DOA_DO_DFCM"><di:waypoint x="4883" y="3504" /><di:waypoint x="4873" y="3510" /></bpmndi:BPMNEdge>
+<bpmndi:BPMNShape id="TA_01_di" bpmnElement="TA_01"><dc:Bounds x="370" y="205" width="230" height="52" /></bpmndi:BPMNShape>
+<bpmndi:BPMNEdge id="AS_TA_01_di" bpmnElement="AS_TA_01"><di:waypoint x="390" y="257" /><di:waypoint x="278" y="300" /></bpmndi:BPMNEdge>
+<bpmndi:BPMNShape id="TA_02_di" bpmnElement="TA_02"><dc:Bounds x="912" y="333" width="230" height="52" /></bpmndi:BPMNShape>
+<bpmndi:BPMNEdge id="AS_TA_02_di" bpmnElement="AS_TA_02"><di:waypoint x="932" y="385" /><di:waypoint x="978" y="443" /></bpmndi:BPMNEdge>
+<bpmndi:BPMNShape id="TA_03_di" bpmnElement="TA_03"><dc:Bounds x="2650" y="337" width="230" height="52" /></bpmndi:BPMNShape>
+<bpmndi:BPMNEdge id="AS_TA_03_di" bpmnElement="AS_TA_03"><di:waypoint x="2670" y="389" /><di:waypoint x="2728" y="432" /></bpmndi:BPMNEdge>
+<bpmndi:BPMNShape id="TA_04_di" bpmnElement="TA_04"><dc:Bounds x="3525" y="487" width="230" height="52" /></bpmndi:BPMNShape>
+<bpmndi:BPMNEdge id="AS_TA_04_di" bpmnElement="AS_TA_04"><di:waypoint x="3545" y="539" /><di:waypoint x="3602" y="582" /></bpmndi:BPMNEdge>
+<bpmndi:BPMNShape id="TA_05_di" bpmnElement="TA_05"><dc:Bounds x="4172" y="1413" width="230" height="52" /></bpmndi:BPMNShape>
+<bpmndi:BPMNEdge id="AS_TA_05_di" bpmnElement="AS_TA_05"><di:waypoint x="4192" y="1465" /><di:waypoint x="4128" y="1493" /></bpmndi:BPMNEdge>
+<bpmndi:BPMNShape id="TA_06_di" bpmnElement="TA_06"><dc:Bounds x="4585" y="2287" width="230" height="52" /></bpmndi:BPMNShape>
+<bpmndi:BPMNEdge id="AS_TA_06_di" bpmnElement="AS_TA_06"><di:waypoint x="4605" y="2339" /><di:waypoint x="4652" y="2382" /></bpmndi:BPMNEdge>
+<bpmndi:BPMNShape id="TA_07_di" bpmnElement="TA_07"><dc:Bounds x="4948" y="3348" width="230" height="52" /></bpmndi:BPMNShape>
+<bpmndi:BPMNEdge id="AS_TA_07_di" bpmnElement="AS_TA_07"><di:waypoint x="4968" y="3400" /><di:waypoint x="5002" y="3443" /></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="MF_01_di" bpmnElement="MF_01"><di:waypoint x="318" y="161" /><di:waypoint x="318" y="260" /><di:waypoint x="278" y="260" /><di:waypoint x="278" y="300" /></bpmndi:BPMNEdge>
+</bpmndi:BPMNPlane>
+</bpmndi:BPMNDiagram>
+</definitions>
